@@ -1,4 +1,6 @@
-export default function Home() {
-    return <h1>Welcome to Solar System Simulator</h1>;
-  }
+export default function SolarSystemSimulator() {
+    return (
+        <h1>Welcome to Solary System Simnulator</h1>
+    );
+}
   

@@ -15,4 +15,21 @@ nav > div > ul{
   justify-content: space-evenly;
   align-items: center;
   list-style: none;
+  gap: 5px;
+}
+
+.active {
+  font-weight: bold;
+}
+
+.hamburger-icon {
+  display: none;
+}
+@media (max-width: 800px) {
+  .hamburger-icon {
+    display: block;
+  }
+  .navigation-links {
+    display: none;
+  }
 }

@@ -1,5 +1,8 @@
 
-APOD_URL = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY"
+const APOD_URL = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY"
+const SPACEDEV_EVENTS_BASE_URL=`https://lldev.thespacedevs.com/2.2.0/event`;
+const SPACE_NEWS_API = "https://api.spaceflightnewsapi.net/v4/articles"
+const HUBBLE_API_ = 'http://hubblesite.org/api/v3/images';
 
 
 async function fetchAndSetAPOD() {
