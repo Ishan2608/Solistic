@@ -1,4 +1,4 @@
-# Solistic
+# Solistic (Work In Progress)
 
 A one stop platform for all space enthusiasts to stay updated on latest trends, news, and event of the cosmos. They also get to explore the solar system in our simulator and explore the image gallery from sources like Hubble and Mars Rover.
 
