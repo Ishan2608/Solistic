@@ -7,7 +7,7 @@ import News from "./pages/News";
 import Tutor from "./pages/Tutor";
 import SolarSystemSimulator from "./pages/SolarSystemSimulator";
 
-import Navigation from "./components/Navigation";
+import Navigation from "./components/Global/Navigation";
 
 export default function App() {
   return (
