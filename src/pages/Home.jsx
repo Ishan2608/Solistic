@@ -1,13 +1,13 @@
 import React from 'react';
 import EventsSection from '../components/Events/EventsSection';
 import APOD from "../components/APOD"
+import HomeHeader from '../components/HomeHeader';
 
 export default function Home() {
   return (
     <main>
       <section className="hero">
-        <h1>Explore The Universe</h1>
-        <p>Discover the latest in space exploration, celestial events, and stunning imagery.</p>
+        <HomeHeader />
       </section>
       <section className="apod-section">
         <APOD />
