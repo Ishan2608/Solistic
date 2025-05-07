@@ -1,5 +1,6 @@
 import React from 'react';
 import EventsSection from '../components/Events/EventsSection';
+import APOD from "../components/APOD"
 
 export default function Home() {
   return (
@@ -9,7 +10,7 @@ export default function Home() {
         <p>Discover the latest in space exploration, celestial events, and stunning imagery.</p>
       </section>
       <section className="apod-section">
-
+        <APOD />
       </section>
       <section className="events-section">
         <EventsSection />

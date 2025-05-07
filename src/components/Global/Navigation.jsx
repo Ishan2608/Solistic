@@ -5,7 +5,7 @@ import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons'; // Added fa
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faUser, faBars, faTimes); // Added faTimes to library
+library.add(faUser, faBars, faTimes);
 
 function Navigation() {
   const location = useLocation();
