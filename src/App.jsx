@@ -6,6 +6,7 @@ import ImageGallery from "./pages/ImageGallery";
 import News from "./pages/News";
 import Tutor from "./pages/Tutor";
 import SolarSystemSimulator from "./pages/SolarSystemSimulator";
+import Profile from "./pages/Profile"
 
 import Navigation from "./components/Global/Navigation";
 
@@ -25,8 +26,9 @@ export default function App() {
           path="/solar-system-simulator"
           element={<SolarSystemSimulator> </SolarSystemSimulator>}
         ></Route>
-        <Route path="/tutor" element={<Tutor> </Tutor>}></Route>
-        <Route path="*" element={<Navigate to="/auth" />} />
+        <Route path="/tutor" element={<Tutor> </Tutor>}> </Route>
+        <Route path="/profile" element={<Profile> </Profile>}> </Route>
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );

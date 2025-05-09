@@ -66,7 +66,13 @@ function Navigation() {
               Sign In
             </Link>
           </button>
-          <FontAwesomeIcon icon="fa-user" className="hidden md:block" />
+          <Link to="/profile" className="centered">
+            <FontAwesomeIcon 
+              icon="fa-user" 
+              className="hidden md:block cursor-pointer hover:text-blue-400 transition-colors" 
+              aria-label="Go to profile"
+            />
+          </Link>
           <FontAwesomeIcon 
             icon={isMobileMenuOpen ? faTimes : faBars}
             className="hamburger-icon cursor-pointer text-2xl md:text-lg" 
@@ -80,9 +86,17 @@ function Navigation() {
       {isMobileMenuOpen && (
         <div className="mobile-menu-overlay" onClick={closeMobileMenu}>
           <div 
-            className="mobile-menu-container"
+            className="mobile-menu-container" 
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside menu
           >
+            <div className="mobile-menu-header">
+              <FontAwesomeIcon 
+                icon={faTimes}
+                className="close-icon" 
+                onClick={closeMobileMenu}
+                aria-label="Close menu"
+              />
+            </div>
             {/* Mobile Navigation Links */}
             <ul className="mobile-menu-links">
               {navLinks.map((link) => (
@@ -99,8 +113,14 @@ function Navigation() {
               {/* Mobile Sign In Button */}
               <li className="mobile-sign-in">
                 <Link to="/auth" onClick={closeMobileMenu}>
-                  <FontAwesomeIcon icon="fa-user" className="mr-2" />
                   Sign In
+                </Link>
+              </li>
+              {/* Mobile Profile Button */}
+              <li className="mobile-profile">
+                <Link to="/profile" onClick={closeMobileMenu}>
+                  <FontAwesomeIcon icon="fa-user" className="mr-2" />
+                  Profile
                 </Link>
               </li>
             </ul>
@@ -140,8 +160,25 @@ function Navigation() {
         }
         
         @keyframes slideIn {
-          from { transform: translateX(100%); }
-          to { transform: translateX(0); }
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .mobile-menu-header {
+          display: flex;
+          justify-content: flex-end;
+          margin-bottom: 2rem;
+        }
+        
+        .close-icon {
+          color: #e0e0e0;
+          font-size: 1.5rem;
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+        
+        .close-icon:hover {
+          color: #00aaff;
         }
         
         .mobile-menu-links {
@@ -174,12 +211,33 @@ function Navigation() {
         .mobile-sign-in {
           margin-top: 1.5rem;
           padding: 0.75rem 1rem;
-          background-color: #007bff;
+          background-color: #00aaff;
           border-radius: 4px;
           text-align: center;
+          border: none;
+          box-shadow: 0 0 15px rgba(0, 170, 255, 0.3);
         }
         
         .mobile-sign-in a {
+          color: white !important;
+          font-weight: bold;
+        }
+        
+        .mobile-profile {
+          margin-top: 1rem;
+          padding: 0.75rem 1rem;
+          background-color: #333;
+          border-radius: 4px;
+          text-align: center;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          transition: background-color 0.2s;
+        }
+        
+        .mobile-profile:hover {
+          background-color: #444;
+        }
+        
+        .mobile-profile a {
           color: white !important;
           font-weight: bold;
         }

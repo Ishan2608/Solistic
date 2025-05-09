@@ -94,7 +94,7 @@ nav > .menu > ul > li > a{
 .nav-right{
   gap: 10px;
 }
-
+.nav-right > a > svg,
 .nav-right > svg{
   color: white;
   height: 30px;
@@ -129,6 +129,7 @@ nav > .menu > ul > li > a{
 .nav-right > button:hover *{
   color: white;
 }
+
 
 /* LoadingSpinner */
 
