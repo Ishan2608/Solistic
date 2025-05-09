@@ -36,7 +36,7 @@ function Navigation() {
       <nav className="row between-center">
         {/* Navigation Logo */}
         <div className="logo-container">
-          <Link to="/" id="nav-logo-link" className={`centered ${location.pathname === "/" ? "active" : ""}`}>    
+          <Link to="/" id="nav-logo-link" className="centered">    
             <img id="nav-logo-img" src="src/assets/logo.png" alt="Logo" />
           </Link>
         </div>

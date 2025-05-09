@@ -41,14 +41,16 @@ EVENTS Section
   align-items: center;
   justify-content: center;
   padding: 0.5rem;
-  border: 1px solid #ddd;
+  border: 1px solid #444; /* Darker border for visibility on black */
+  color: #ddd; /* Lighter text color */
   cursor: pointer;
 }
 
 .date.empty {
-  background-color: #f5f5f5;
-  border: 1px solid #eee;
+  background-color: #222; /* Darker background for empty days */
+  border: 1px solid #333; /* Darker border for empty days */
   cursor: default;
+  color: #666; /* Dimmer text color for empty days */
 }
 
 .date.event {
@@ -62,7 +64,7 @@ EVENTS Section
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #666;
+  background-color: #00ff00; /* Bright green dot for events */
 }
 
 .loading,
@@ -87,6 +89,7 @@ EVENTS Section
 
 .events-section h2 {
   text-align: center;
+  color: white; /* Make section heading visible */
   margin-bottom: 2rem;
 }
 
@@ -108,18 +111,20 @@ EVENTS Section
 
 /* Event Card Styling */
 .event-card {
-  border: 1px solid #ddd;
+  border: 1px solid #444; /* Darker border for event card */
   border-radius: 8px;
   padding: 1.5rem;
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: #333; /* Darker background for event card */
+  color: #ddd; /* Lighter text for event card */
 }
 
 .event-card.empty {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; /* Center content */
   text-align: center;
   color: #666;
   background-color: #f9f9f9;
@@ -175,7 +180,7 @@ EVENTS Section
   display: inline-block;
   text-align: center;
   background-color: #333;
-  color: white;
+  color: white; /* Keep button text white */
   font-weight: 500;
   min-width: 120px;
 }
@@ -194,9 +199,22 @@ EVENTS Section
 
 .event-details {
   margin-bottom: 1.5rem;
-  padding: 0.75rem;
-  background-color: #f9f9f9;
+  padding: 0.75rem; /* Add padding for spacing */
+  /* background-color: #f9f9f9; */
   border-radius: 4px;
+}
+
+#event-save-btn{
+  background-color: black;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+#event-save-btn:hover{
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  transition: all 100ms linear;
 }
 
 /* Responsive Styling */
@@ -275,7 +293,8 @@ Astronomical Picture of the Day (APOD)
   flex-wrap: wrap;
   gap: 20px;
   padding: 20px;
-  /* color: white; */
+  background-color: #1a1a1a; /* Darker background for APOD section */
+  color: white;
   border-radius: 8px;
   margin-bottom: 20px;
 }
@@ -309,6 +328,6 @@ Astronomical Picture of the Day (APOD)
 
 .apod-date {
   font-size: 0.9rem;
-  color: #666;
+  color: #aaa; /* Lighter date color for visibility */
 }
 
