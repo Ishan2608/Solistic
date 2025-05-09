@@ -184,6 +184,7 @@ const SolarSystem = () => {
   const infoTitleRef = useRef(null);
   const infoContentRef = useRef(null);
   
+  
   // Planet data
   const planetData = [
     {
@@ -297,12 +298,16 @@ const SolarSystem = () => {
     controls.dampingFactor = 0.05;
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0x333333);
+    const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
     scene.add(ambientLight);
 
     // Main light (Sun)
-    const sunLight = new THREE.PointLight(0xffffff, 2, 300);
+    const sunLight = new THREE.PointLight(0xffffff, 2, 1000);
     scene.add(sunLight);
+    //light directional 
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(100, 100, 100);
+    scene.add(directionalLight);
 
     // Solar system tilt
     const solarSystem = new THREE.Group();
@@ -364,8 +369,10 @@ const SolarSystem = () => {
           emissiveIntensity: 0.5
         });
       } else {
-        planetMaterial = new THREE.MeshLambertMaterial({ 
-          color: planet.color
+        planetMaterial = new THREE.MeshPhongMaterial({ 
+          color: planet.color,
+          shininess: 30,
+          specular: 0x333333
         });
       }
       

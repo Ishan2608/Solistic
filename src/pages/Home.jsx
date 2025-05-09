@@ -1,7 +1,7 @@
 import React from 'react';
 import EventsSection from '../components/Events/EventsSection';
 import APOD from "../components/APOD"
-import HomeHeader from '../components/HomeHeader';
+import HomeHeader from '../components/Global/Header';
 
 export default function Home() {
   return (

@@ -25,7 +25,6 @@ function Navigation() {
   // Navigation links array for DRY code
   const navLinks = [
     { path: "/", name: "Home" },
-    { path: "/auth", name: "Auth" },
     { path: "/news", name: "News" },
     { path: "/image-gallery", name: "Image Gallery" },
     { path: "/solar-system-simulator", name: "Solar System Simulator" },
@@ -34,17 +33,17 @@ function Navigation() {
 
   return (
     <>
-      <nav>
+      <nav className="row between-center">
         {/* Navigation Logo */}
         <div className="logo-container">
-          <Link to="/" id="nav-logo-link" className={location.pathname === "/" ? "active" : ""}>    
+          <Link to="/" id="nav-logo-link" className={`centered location.pathname === "/" ? "active" : ""`}>    
             <img id="nav-logo-img" src="src/assets/logo.png" alt="Logo" />
           </Link>
         </div>
 
         {/* Navigation Links */}
         <div className="menu">
-          <ul className="row-even-center">
+          <ul className="row even-center">
             {navLinks.map((link) => (
               <li key={link.path} className="centered">
                 <Link 
@@ -59,57 +58,24 @@ function Navigation() {
         </div>
 
         {/* Sign-Up Button */}
-        <div>
-          <button>Sign In</button>
+        <div className="nav-right row even-center">
+          <button>
+            <Link
+              to="/auth"
+            >
+              Sign In
+            </Link>
+
+          </button>
           <FontAwesomeIcon icon="fa-user" />
           <FontAwesomeIcon 
-            icon={faBars} 
+            icon={faBars}
             className="hamburger-icon" 
             onClick={toggleMobileMenu}
             aria-label="Toggle mobile menu"
           />
         </div>
       </nav>
-
-      {/* Mobile Menu */}
-      <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
-        <div className="mobile-menu-header">
-          <div className="logo-container">
-            <img id="nav-logo-img" src="src/assets/logo.png" alt="Logo" />
-          </div>
-          <button 
-            className="mobile-menu-close" 
-            onClick={closeMobileMenu}
-            aria-label="Close mobile menu"
-          >
-            <FontAwesomeIcon icon={faTimes} />
-          </button>
-        </div>
-        <ul>
-          {navLinks.map((link) => (
-            <li key={link.path}>
-              <Link 
-                to={link.path} 
-                className={location.pathname === link.path ? "active" : ""}
-                onClick={closeMobileMenu}
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-          <li>
-            <Link to="/sign-in" onClick={closeMobileMenu}>
-              Sign In
-            </Link>
-          </li>
-        </ul>
-      </div>
-
-      {/* Backdrop */}
-      <div 
-        className={`backdrop ${isMobileMenuOpen ? 'open' : ''}`} 
-        onClick={closeMobileMenu}
-      ></div>
     </>
   );
 }
