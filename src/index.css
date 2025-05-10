@@ -13,7 +13,19 @@
 }
 
 .bold-txt {
-  font-weight: 900;
+  font-weight: 700;
+}
+
+.txt-md{
+  font-size: 1.5rem;
+}
+
+.txt-lg{
+  font-size: 2rem;
+}
+
+.txt-2xl{
+  font-size: 4rem;
 }
 
 * {
@@ -75,7 +87,7 @@ nav{
   position: sticky;
   top: 0;
   left: 0;
-  height: 50px;
+  height: 55px;
   width: 100%;
   z-index: 1000;
   padding: 0px 10px;

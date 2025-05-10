@@ -15,8 +15,8 @@ const Header = ({ title, paragraph, backgroundImage }) => {
   return (
     <div className="header-container" style={headerStyle}>
       <div className="header-content bold-txt">
-        <h1>{headerTitle}</h1>
-        <p>{headerParagraph}</p>
+        <h1 className="txt-2xl bold-txt">{headerTitle}</h1>
+        <p className='txt-md'>{headerParagraph}</p>
       </div>
     </div>
   );
