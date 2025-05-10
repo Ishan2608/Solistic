@@ -34,16 +34,6 @@ const styles = {
   infoContent: {
     fontSize: '14px',
     lineHeight: 1.4,
-  },
-  controls: {
-    position: 'absolute',
-    top: '20px',
-    right: '20px',
-    color: 'white',
-    background: 'rgba(0, 0, 0, 0.7)',
-    padding: '10px',
-    borderRadius: '5px',
-    fontSize: '12px',
   }
 };
 
@@ -524,12 +514,6 @@ const SolarSystem = () => {
         <div ref={infoPanelRef} style={styles.infoPanel}>
           <div ref={infoTitleRef} style={styles.infoTitle}>Planet Name</div>
           <div ref={infoContentRef} style={styles.infoContent}>Description goes here.</div>
-        </div>
-        <div style={styles.controls}>
-          Controls:<br/>
-          Mouse Drag: Rotate view<br/>
-          Mouse Wheel: Zoom in/out<br/>
-          Click on planet: Show info
         </div>
       </div>
     </div>
