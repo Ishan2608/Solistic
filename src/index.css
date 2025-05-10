@@ -119,6 +119,8 @@ nav > .menu > ul > li > a:hover{
 }
 
 #nav-logo-img{
+  border-radius: 50%;
+  border: 3px solid white;
   height: 100%;
 }
 
