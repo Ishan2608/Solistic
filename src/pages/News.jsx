@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../components/Global/Header";
+import Header from "../components/Common/Header";
 
 const HEADER_TITLE = "Welcome to Space पत्रिका";
 const HEADER_PARA = "Stay updated on all stars through the cosmos.";

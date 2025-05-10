@@ -8,7 +8,7 @@ import Tutor from "./pages/Tutor";
 import SolarSystemSimulator from "./pages/SolarSystemSimulator";
 import Profile from "./pages/Profile"
 
-import Navigation from "./components/Global/Navigation";
+import Navigation from "./components/Common/Navigation";
 
 export default function App() {
   return (

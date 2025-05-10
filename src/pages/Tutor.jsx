@@ -1,5 +1,5 @@
 import React from 'react'
-import Header from "../components/Global/Header";
+import Header from "../components/Common/Header";
 
 const HEADER_TITLE = "Welcome to अंतरिक्ष Tutor";
 const HEADER_PARA = "Knowledge is power. Only we can give you that power";

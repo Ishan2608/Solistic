@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAPOD } from '../api/spaceAPI';
-import LoadingSpinner from './common/LoadingSpinner';
+import LoadingSpinner from './Common/LoadingSpinner';
+import ErrorMessage from './Common/ErrorMessage';
 
 function APOD() {
   const [apodData, setApodData] = useState(null);
@@ -9,21 +10,32 @@ function APOD() {
 
   useEffect(() => {
     const getAPOD = async () => {
+      // Reset states at the beginning of each fetch attempt
+      setLoading(true);
+      setError(null);
+      
       try {
         const data = await fetchAPOD();
+        if (!data) {
+          throw new Error('No data received from NASA API');
+        }
         setApodData(data);
-      } catch (err) {
-        setError(err.message || 'An error occurred');
-      } finally {
         setLoading(false);
+      } catch (err) {
+        console.error('APOD Error:', err);
+        setError(err.message || 'An error occurred loading the astronomy picture');
+        setLoading(false);
+        // Clear any potential partial data on error
+        setApodData(null);
       }
     };
 
     getAPOD();
   }, []);
 
+  // Order of conditionals matters here
   if (loading) return <LoadingSpinner />;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <ErrorMessage message={error} />; // Using our new ErrorMessage component
   if (!apodData) return null;
 
   return (

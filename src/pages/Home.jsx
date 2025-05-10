@@ -1,7 +1,7 @@
 import React from 'react';
 import EventsSection from '../components/Events/EventsSection';
 import APOD from "../components/APOD"
-import Header from '../components/Global/Header';
+import Header from '../components/Common/Header';
 
 
 

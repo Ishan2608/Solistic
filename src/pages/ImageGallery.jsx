@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../components/Global/Header";
+import Header from "../components/Common/Header";
 import ImageGallerySection from "../components/ImageGallery/ImageGallerySection";
 import "../styles/gallery.css";
 
