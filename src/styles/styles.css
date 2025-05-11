@@ -232,6 +232,7 @@ EVENTS Section
   color: white; /* Keep button text white */
   font-weight: 500;
   min-width: 120px;
+  font-size: 18px;
 }
 
 .button:hover {
@@ -248,8 +249,7 @@ EVENTS Section
 
 .event-details {
   margin-bottom: 1.5rem;
-  padding: 0.75rem; /* Add padding for spacing */
-  /* background-color: #f9f9f9; */
+  padding: 0.75rem;
   border-radius: 4px;
 }
 
@@ -457,20 +457,28 @@ Astronomical Picture of the Day (APOD)
 ----------------------------------------------------
 */
 
+.apod-sect{
+  background-color: #1a1a1a;
+}
+
+.apod-sect-title{
+  padding: 20px;
+  text-align: center;
+}
+
 .apod-container {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   padding: 20px;
-  background-color: #1a1a1a; /* Darker background for APOD section */
   color: white;
   border-radius: 8px;
   margin-bottom: 20px;
 }
 
 .apod-image-container {
-  flex: 1 1 400px; /* Grow, shrink, and base size */
-  max-width: 550px;
+  position: relative;
+  flex: 1 1 350px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -479,20 +487,25 @@ Astronomical Picture of the Day (APOD)
 .apod-image {
   max-width: 100%;
   height: auto;
+  max-height: 500px;
   border-radius: 8px;
 }
 
 .apod-details {
-  flex: 1 1 300px; /* Grow, shrink, and base size */
+  flex: 1 1 350px; /* Grow, shrink, and base size */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   gap: 10px;
 }
 
 .apod-title {
-  font-size: 1.5rem;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translate(-50%, 0);
   margin-bottom: 5px;
+  text-shadow: 1px 1px black;
 }
 
 .apod-date {

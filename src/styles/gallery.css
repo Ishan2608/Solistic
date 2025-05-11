@@ -38,6 +38,7 @@
 
 .image-tabs {
     display: flex;
+    justify-content: center;
     align-items: center;
     max-width: 100%;
     overflow-x: auto;
@@ -240,7 +241,6 @@
     }
 
     .image-tabs {
-        justify-content: flex-start;
         width: 100%;
     }
     

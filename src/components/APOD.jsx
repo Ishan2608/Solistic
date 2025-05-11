@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { fetchAPOD } from '../api/spaceAPI';
 import LoadingSpinner from './Common/LoadingSpinner';
 import ErrorMessage from './Common/ErrorMessage';
+import { truncateText } from '../utility/helpers';
 
 function APOD() {
   const [apodData, setApodData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const getAPOD = async () => {
@@ -39,22 +41,32 @@ function APOD() {
   if (!apodData) return null;
 
   return (
-    <div className="apod-container">
-      <div className="apod-image-container">
-        <img
-          src={apodData.url}
-          alt={apodData.title}
-          className="apod-image"
-        />
-      </div>
-      <div className="apod-details">
-        <h2 className="apod-title">Astronomy Picture of the Day</h2>
-        <h3 className="apod-title">{apodData.title}</h3>
-        <p className="apod-date">{apodData.date}</p>
-        <p className="apod-explanation">{apodData.explanation}</p>
-        <p className="apod-copyright">
-          {apodData.copyright && `Copyright: ${apodData.copyright}`}
-        </p>
+    <div className='apod-sect'>
+      <h1 className="txt-lg apod-sect-title">
+        Astronomy Picture of the Day
+      </h1>
+      <div className="apod-container">
+        <div className="apod-image-container">
+          <img
+            src={apodData.url}
+            alt={apodData.title}
+            className="apod-image"
+          />
+        </div>
+        <div className="apod-details">
+          <h3 className="txt-lg">{apodData.title}</h3>
+          <p className="apod-date">{apodData.date}</p>
+          <p className="apod-explanation">
+            {expanded ? apodData.explanation : truncateText(apodData.explanation, 300)}
+            {apodData.explanation.length > 300 && (
+              <button onClick={() => setExpanded(!expanded)} className="read-more-btn">
+                {expanded ? 'Read Less' : 'Read More'}
+              </button>
+            )}</p>
+          <p className="apod-copyright">
+            {apodData.copyright && `Copyright: ${apodData.copyright}`}
+          </p>
+        </div>
       </div>
     </div>
   );
