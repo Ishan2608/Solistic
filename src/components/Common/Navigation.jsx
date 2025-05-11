@@ -137,8 +137,8 @@ function Navigation() {
           left: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(0, 0, 0, 0.5);
-          backdrop-filter: blur(5px);
+          background-color: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(5px);
           z-index: 998;
           display: flex;
@@ -146,7 +146,7 @@ function Navigation() {
         }
         
         .mobile-menu-container {
-          background-color: #1a1a1a;
+          background-color: rgba(0, 0, 0, 0.1);
           width: 80%;
           max-width: 300px;
           height: 100%;
@@ -154,7 +154,7 @@ function Navigation() {
           overflow-y: auto;
           animation: slideIn 0.3s ease-out;
           z-index: 999;
-          backdrop-filter: blur(10px);
+          backdrop-filter: blur(50px);
           -webkit-backdrop-filter: blur(10px);
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
