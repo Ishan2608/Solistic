@@ -9,7 +9,7 @@ const SimpleLoadingSpinner = () => (
 
 const Calendar = ({ onEventSelect }) => {
   // For debugging
-  console.log("Calendar onEventSelect prop:", onEventSelect);
+  // console.log("Calendar onEventSelect prop:", onEventSelect);
   
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -23,7 +23,7 @@ const Calendar = ({ onEventSelect }) => {
       try {
         setLoading(true);
         const eventData = await fetchEventsForMonth(year, month);
-        console.log("Fetched event data:", eventData);
+        // console.log("Fetched event data:", eventData);
         setEvents(eventData);
         setError(null);
       } catch (err) {
@@ -43,15 +43,15 @@ const Calendar = ({ onEventSelect }) => {
   const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const handleDateClick = (day) => {
-    console.log("Date clicked:", day);
-    console.log("Events for day:", events[day]);
+    // console.log("Date clicked:", day);
+    // console.log("Events for day:", events[day]);
     
     if (events[day]) {
       setSelectedDay(day);
       
       // Check if onEventSelect is a function before calling it
       if (typeof onEventSelect === 'function') {
-        console.log("Calling onEventSelect with:", events[day]);
+        // console.log("Calling onEventSelect with:", events[day]);
         onEventSelect(events[day]);
       } else {
         console.error("onEventSelect is not a function:", onEventSelect);

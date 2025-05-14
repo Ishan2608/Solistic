@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 // CSS styles
 const styles = {
@@ -34,6 +35,20 @@ const styles = {
   infoContent: {
     fontSize: '14px',
     lineHeight: 1.4,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    color: 'white',
+    fontSize: '24px',
+    zIndex: 1000
   }
 };
 
@@ -173,6 +188,7 @@ const SolarSystem = () => {
   const infoPanelRef = useRef(null);
   const infoTitleRef = useRef(null);
   const infoContentRef = useRef(null);
+  const loadingRef = useRef(null);
   
   // Planet data with realistic values
   // Using AU (Astronomical Units) scale with wider spacing
@@ -195,6 +211,8 @@ const SolarSystem = () => {
       orbitSpeed: 0,
       initialAngle: 0,
       color: 0xffdd00,
+      modelFile: "Sun.glb",
+      scale: 15,
       description: "The Sun is the star at the center of our Solar System. It's a nearly perfect sphere of hot plasma, with a diameter about 109 times that of Earth. The Sun's mass is about 330,000 times that of Earth, constituting about 99.86% of the total mass of the Solar System."
     },
     {
@@ -208,6 +226,8 @@ const SolarSystem = () => {
       orbitSpeed: 0.008,
       initialAngle: 1.2,  // ~69 degrees
       color: 0xa9a9a9,
+      modelFile: "Mercury.glb",
+      scale: 0.38,
       description: "Mercury is the smallest and innermost planet in the Solar System. Its orbit around the Sun takes 87.97 Earth days, the shortest of all the planets. Mercury has the most eccentric orbit of all planets with an eccentricity of 0.2056."
     },
     {
@@ -221,6 +241,8 @@ const SolarSystem = () => {
       orbitSpeed: 0.006,
       initialAngle: 3.7,  // ~212 degrees
       color: 0xe6e6e6,
+      modelFile: "Venus.glb",
+      scale: 0.95,
       description: "Venus is the second planet from the Sun. It has the most circular orbit of any planet with an eccentricity of just 0.0068. Venus rotates in the opposite direction to most planets (retrograde rotation) and has an axial tilt of 177.4 degrees."
     },
     {
@@ -234,6 +256,8 @@ const SolarSystem = () => {
       orbitSpeed: 0.005,
       initialAngle: 5.1,  // ~292 degrees
       color: 0x3366ff,
+      modelFile: "Earth.glb",
+      scale: 1,
       description: "Earth is the third planet from the Sun and the only astronomical object known to harbor life. Earth's orbit has a small eccentricity of 0.0167, making it nearly circular. Its axial tilt of 23.44° causes the seasons."
     },
     {
@@ -247,6 +271,8 @@ const SolarSystem = () => {
       orbitSpeed: 0.004,
       initialAngle: 0.6,  // ~34 degrees
       color: 0xcc3300,
+      modelFile: "Mars.glb",
+      scale: 0.53,
       description: "Mars is the fourth planet from the Sun. Its distinctive reddish appearance is due to iron oxide on its surface. Mars has a moderately eccentric orbit with an eccentricity of 0.0934 and an axial tilt (25.19°) similar to Earth's."
     },
     {
@@ -260,6 +286,8 @@ const SolarSystem = () => {
       orbitSpeed: 0.002,
       initialAngle: 2.2,  // ~126 degrees
       color: 0xe6b800,
+      modelFile: "Jupiter.glb",
+      scale: 11.2,
       description: "Jupiter is the fifth planet from the Sun and the largest in the Solar System. Despite its size, Jupiter has a very small axial tilt of just 3.13°. Its orbit has an eccentricity of 0.0484 and an inclination of 1.31° to the ecliptic."
     },
     {
@@ -273,6 +301,8 @@ const SolarSystem = () => {
       orbitSpeed: 0.0015,
       initialAngle: 4.8,  // ~275 degrees
       color: 0xd9c36c,
+      modelFile: "Saturn.glb",
+      scale: 9.45,
       description: "Saturn is the sixth planet from the Sun and known for its prominent ring system. Its orbit has an eccentricity of 0.0539 and an inclination of 2.49°. Saturn's axial tilt of 26.73° gives it seasons similar to Earth's."
     },
     {
@@ -286,6 +316,8 @@ const SolarSystem = () => {
       orbitSpeed: 0.001,
       initialAngle: 3.2,  // ~183 degrees
       color: 0x99ccff,
+      modelFile: "Uranus.glb",
+      scale: 4.0,
       description: "Uranus is the seventh planet from the Sun. Its most distinctive feature is its extreme axial tilt of 97.77°, causing it to rotate nearly on its side. Uranus's orbit has an eccentricity of 0.0473 and a low inclination of 0.77°."
     },
     {
@@ -299,6 +331,8 @@ const SolarSystem = () => {
       orbitSpeed: 0.0008,
       initialAngle: 1.8,  // ~103 degrees
       color: 0x0066ff,
+      modelFile: "Neptune.glb",
+      scale: 3.88,
       description: "Neptune is the eighth and farthest planet from the Sun. Its orbit has an eccentricity of 0.0086 and an inclination of 1.77°. Neptune's axial tilt of 28.32° gives it seasons similar to Earth and Saturn, though each season lasts about 40 years."
     }
   ];
@@ -407,100 +441,114 @@ const SolarSystem = () => {
       return orbit;
     }
 
-    planetData.forEach(planet => {
-      // Create planet orbit group
-      const planetOrbitGroup = new THREE.Group();
-      solarSystem.add(planetOrbitGroup);
+    // Initialize GLTF loader
+    const loader = new GLTFLoader();
+    let modelsLoaded = 0;
+    const totalModels = planetData.length;
 
-      // Create orbit path for planets, not for the sun
-      if (planet.name !== "Sun") {
-        const orbit = createEllipticalOrbit(
-          planet.semiMajorAxis, 
-          planet.eccentricity,
-          0 // We'll handle inclination at the group level
-        );
-        planetOrbitGroup.add(orbit);
-        orbits.push(orbit);
+    // Update loading progress
+    function updateLoadingProgress() {
+      modelsLoaded++;
+      if (loadingRef.current) {
+        loadingRef.current.textContent = `Loading models: ${modelsLoaded}/${totalModels}`;
         
-        // Apply inclination to the entire orbit group
-        planetOrbitGroup.rotation.x = (planet.inclination * Math.PI) / 180;
+        // Hide loading overlay when all models are loaded
+        if (modelsLoaded === totalModels) {
+          setTimeout(() => {
+            if (loadingRef.current) {
+              loadingRef.current.style.display = 'none';
+            }
+          }, 500);
+        }
       }
-      
-      // Create planet
-      const planetGeometry = new THREE.SphereGeometry(planet.radius, 32, 32);
-      
-      let planetMaterial;
-      if (planet.name === "Sun") {
-        planetMaterial = new THREE.MeshBasicMaterial({ 
-          color: planet.color,
-          emissive: 0xff5500,
-          emissiveIntensity: 0.5
-        });
-      } else {
-        planetMaterial = new THREE.MeshPhongMaterial({ 
-          color: planet.color,
-          shininess: 30,
-          specular: 0x333333
-        });
-      }
-      
-      const planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
-      
-      // Add planet to its orbit group (or directly to solar system for the Sun)
-      if (planet.name === "Sun") {
-        planetOrbitGroup.add(planetMesh);
-      } else {
-        planetOrbitGroup.add(planetMesh);
-      }
-      
-      // Create axis indication for axial tilt
-      if (planet.name !== "Sun") {
-        // Scale the axis length proportionally to the planet's radius
-        const axisLength = planet.radius * 3;
-        const axisGeometry = new THREE.CylinderGeometry(0.05, 0.05, axisLength, 8);
-        const axisMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.3});
-        const axis = new THREE.Mesh(axisGeometry, axisMaterial);
-        planetMesh.add(axis);
-      }
-      
-      // Apply axial tilt
-      planetMesh.rotation.z = (planet.axialTilt * Math.PI) / 180;
-      
-      // Add Saturn's rings if needed
-      if (planet.name === "Saturn") {
-        const ringGeometry = new THREE.RingGeometry(planet.radius * 1.5, planet.radius * 2.5, 64);
-        const ringMaterial = new THREE.MeshBasicMaterial({ 
-          color: 0xd9c36c,
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.6
-        });
-        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-        ring.rotation.x = Math.PI / 2;
-        planetMesh.add(ring);
-      }
-      
-      // Add Uranus's rings as well
-      if (planet.name === "Uranus") {
-        const ringGeometry = new THREE.RingGeometry(planet.radius * 1.4, planet.radius * 1.8, 64);
-        const ringMaterial = new THREE.MeshBasicMaterial({ 
-          color: 0xaaaaaa,
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.4
-        });
-        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-        ring.rotation.x = Math.PI / 2;
-        planetMesh.add(ring);
-      }
-      
-      // Store planet data
-      planets.push({
-        mesh: planetMesh,
-        orbitGroup: planetOrbitGroup,
-        data: planet
+    }
+
+    // Load 3D model function
+    function loadPlanetModel(planet, planetOrbitGroup) {
+      return new Promise((resolve) => {
+        // Log the model path for debugging
+        const modelPath = `./models/${planet.modelFile}`; // Changed from ../models to ./models
+        console.log(`Attempting to load: ${modelPath}`);
+        
+        loader.load(
+          modelPath,
+          (gltf) => {
+            const model = gltf.scene;
+            
+            // Scale the model according to planet radius
+            model.scale.set(planet.scale, planet.scale, planet.scale);
+            
+            // Apply axial tilt
+            model.rotation.z = (planet.axialTilt * Math.PI) / 180;
+            
+            // Add model to the orbit group
+            planetOrbitGroup.add(model);
+            
+            console.log(`Successfully loaded ${planet.name} model`);
+            updateLoadingProgress();
+            resolve(model);
+          },
+          // Progress callback
+          (xhr) => {
+            const percentComplete = (xhr.loaded / xhr.total) * 100;
+            console.log(`${planet.name} loading: ${Math.round(percentComplete)}%`);
+          },
+          // Error callback
+          (error) => {
+            console.error(`Error loading model for ${planet.name}:`, error);
+            
+            // Fallback to basic sphere if model loading fails
+            console.log(`Creating fallback sphere for ${planet.name}`);
+            const planetGeometry = new THREE.SphereGeometry(planet.radius, 32, 32);
+            const planetMaterial = planet.name === "Sun" 
+              ? new THREE.MeshBasicMaterial({ color: planet.color }) 
+              : new THREE.MeshPhongMaterial({ color: planet.color });
+            
+            const fallbackMesh = new THREE.Mesh(planetGeometry, planetMaterial);
+            planetOrbitGroup.add(fallbackMesh);
+            
+            updateLoadingProgress();
+            resolve(fallbackMesh);
+          }
+        );
       });
-    });
+    }
+
+    // Load all planet models
+    async function loadAllPlanets() {
+      for (const planet of planetData) {
+        // Create planet orbit group
+        const planetOrbitGroup = new THREE.Group();
+        solarSystem.add(planetOrbitGroup);
+
+        // Create orbit path for planets, not for the sun
+        if (planet.name !== "Sun") {
+          const orbit = createEllipticalOrbit(
+            planet.semiMajorAxis, 
+            planet.eccentricity,
+            0 // We'll handle inclination at the group level
+          );
+          planetOrbitGroup.add(orbit);
+          orbits.push(orbit);
+          
+          // Apply inclination to the entire orbit group
+          planetOrbitGroup.rotation.x = (planet.inclination * Math.PI) / 180;
+        }
+        
+        // Load 3D model
+        const planetMesh = await loadPlanetModel(planet, planetOrbitGroup);
+        
+        // Store planet data
+        planets.push({
+          mesh: planetMesh,
+          orbitGroup: planetOrbitGroup,
+          data: planet
+        });
+      }
+    }
+
+    // Start loading planets
+    loadAllPlanets();
 
     // Raycaster for planet selection
     const raycaster = new THREE.Raycaster();
@@ -515,16 +563,33 @@ const SolarSystem = () => {
       // Update the raycaster
       raycaster.setFromCamera(mouse, camera);
       
-      // Get all planet meshes
-      const planetMeshes = planets.map(p => p.mesh);
+      // Get all planet meshes and their children (for 3D models)
+      const planetObjects = [];
+      planets.forEach(planet => {
+        // Add the mesh itself
+        planetObjects.push(planet.mesh);
+        
+        // If it's a 3D model, it will have children. Add them too
+        if (planet.mesh.children && planet.mesh.children.length > 0) {
+          planet.mesh.traverse((child) => {
+            if (child.isMesh) {
+              planetObjects.push(child);
+              child.userData.parentPlanet = planet; // Store reference to the parent planet
+            }
+          });
+        }
+      });
       
       // Check for intersections
-      const intersects = raycaster.intersectObjects(planetMeshes);
+      const intersects = raycaster.intersectObjects(planetObjects);
       
       if (intersects.length > 0) {
         // Find which planet was clicked
-        const clickedMesh = intersects[0].object;
-        const planet = planets.find(p => p.mesh === clickedMesh);
+        const clickedObject = intersects[0].object;
+        
+        // Get the parent planet (either directly or from userData)
+        const planet = clickedObject.userData.parentPlanet || 
+                        planets.find(p => p.mesh === clickedObject);
         
         if (planet) {
           // Show info panel
@@ -539,7 +604,9 @@ const SolarSystem = () => {
             }
             
             selectedPlanet = planet;
-            selectedPlanet.mesh.scale.set(1.1, 1.1, 1.1);
+            // Slightly increase scale to highlight the selected planet
+            const highlightScale = planet.data.scale * 1.1 || 1.1;
+            selectedPlanet.mesh.scale.set(highlightScale, highlightScale, highlightScale);
           }
         }
       } else {
@@ -548,7 +615,8 @@ const SolarSystem = () => {
           infoPanelRef.current.style.display = 'none';
         }
         if (selectedPlanet) {
-          selectedPlanet.mesh.scale.set(1, 1, 1);
+          const originalScale = selectedPlanet.data.scale || 1;
+          selectedPlanet.mesh.scale.set(originalScale, originalScale, originalScale);
           selectedPlanet = null;
         }
       }
@@ -567,19 +635,16 @@ const SolarSystem = () => {
 
     // Function to calculate planet position on elliptical orbit
     function calculateEllipticalPosition(planet, time) {
-      // Kepler's equation is complex to solve exactly
-      // This is a simplified approach for visualization
       const a = planet.data.semiMajorAxis;
       const e = planet.data.eccentricity;
-      const initialAngle = planet.data.initialAngle || 0; // Starting position angle
+      const initialAngle = planet.data.initialAngle || 0;
       
       // Mean anomaly (simple time-based progression around orbit plus initial position)
       const M = (time * planet.data.orbitSpeed * 2 * Math.PI) + initialAngle;
       
       // Approximate the eccentric anomaly (E) using a simple iterative approach
-      // For small eccentricities, this approximation is reasonable
       let E = M;
-      for (let i = 0; i < 5; i++) {  // 5 iterations is enough for visualization
+      for (let i = 0; i < 5; i++) {
         E = M + e * Math.sin(E);
       }
       
@@ -607,7 +672,6 @@ const SolarSystem = () => {
           const position = calculateEllipticalPosition(planet, time);
           
           // Apply position in orbit plane coordinates
-          // This works because we're working within the already-inclined orbit group
           planet.mesh.position.x = position.x;
           planet.mesh.position.y = 0;
           planet.mesh.position.z = position.z;
@@ -649,6 +713,7 @@ const SolarSystem = () => {
   return (
     <div style={styles.solarBody}>
       <div ref={containerRef} style={styles.mainContainer}>
+        <div ref={loadingRef} style={styles.loadingOverlay}>Loading models: 0/9</div>
         <div ref={infoPanelRef} style={styles.infoPanel}>
           <div ref={infoTitleRef} style={styles.infoTitle}>Planet Name</div>
           <div ref={infoContentRef} style={styles.infoContent}>Description goes here.</div>

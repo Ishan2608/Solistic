@@ -9,11 +9,11 @@ const EventsSection = () => {
 
   // Define the event handler function
   const handleEventSelect = (event) => {
-    console.log("Event selected in EventsSection:", event);
+    // console.log("Event selected in EventsSection:", event);
     setSelectedEvent(event);
   };
 
-  console.log("handleEventSelect type:", typeof handleEventSelect);
+  // console.log("handleEventSelect type:", typeof handleEventSelect);
 
   return (
     <section className="events-section">
