@@ -264,6 +264,13 @@ const planetData = [
 
     // Create planets array to store loaded meshes and data
     const planets = [];
+    
+    // Create a moon system to handle Moon and its orbit
+    const moonSystem = {
+      moonGroup: null,  // Will hold the Moon's orbit group
+      moonOrbit: null,  // Will hold the Moon's orbit line
+      moonMesh: null    // Will hold the Moon's mesh
+    };
 
     // Loading Manager
     const manager = new THREE.LoadingManager();
@@ -290,6 +297,9 @@ const planetData = [
 
     // Load models and set up the scene structure
     planetData.forEach(planet => {
+      // Skip the Moon for now - we'll handle it separately
+      if (planet.isMoon) return;
+      
       // Create planet orbit group
       const planetOrbitGroup = new THREE.Group();
       solarSystem.add(planetOrbitGroup);
@@ -336,6 +346,52 @@ const planetData = [
         }
       );
     });
+    
+    // Now handle Moon separately - we'll load it after planets
+    const moonData = planetData.find(p => p.name === "Moon");
+    if (moonData) {
+      // Create a separate group for the Moon to attach to Earth later
+      moonSystem.moonGroup = new THREE.Group();
+      solarSystem.add(moonSystem.moonGroup); // Add the Moon group to the scene
+      
+      loader.load(
+        moonData.modelPath,
+        (gltf) => {
+          const model = gltf.scene;
+          
+          // Scale the Moon model
+          const scaleFactor = moonData.modelScale;
+          model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+          
+          // Apply axial tilt
+          model.rotation.z = (moonData.axialTilt * Math.PI) / 180;
+          
+          // Add the Moon model to its group
+          moonSystem.moonGroup.add(model);
+          moonSystem.moonMesh = model;
+          
+          // Store Moon data for updating
+          planets.push({
+            mesh: model,
+            orbitGroup: moonSystem.moonGroup,
+            data: moonData
+          });
+          
+          // Create orbit for Moon - we'll position this relative to Earth
+          moonSystem.moonOrbit = createCircularOrbit(moonData.semiMajorAxis);
+          moonSystem.moonGroup.add(moonSystem.moonOrbit);
+          
+          // Apply inclination to the Moon's orbit
+          moonSystem.moonGroup.rotation.x = (moonData.inclination * Math.PI) / 180;
+          
+          console.log("Moon loaded successfully");
+        },
+        undefined,
+        (error) => {
+          console.error('An error occurred while loading the Moon model:', error);
+        }
+      );
+    }
 
     // Function to create elliptical orbit path
     function createEllipticalOrbit(semiMajorAxis, eccentricity, inclination) {
@@ -373,6 +429,35 @@ const planetData = [
 
       const orbit = new THREE.Line(orbitGeometry, orbitMaterial);
       return orbit;
+    }
+    
+    // Function to create circular orbit path (for the Moon)
+    function createCircularOrbit(radius) {
+      const segments = 64;
+      const points = [];
+      
+      for (let i = 0; i <= segments; i++) {
+        const theta = (i / segments) * Math.PI * 2;
+        const x = radius * Math.cos(theta);
+        const y = 0;
+        const z = radius * Math.sin(theta);
+        
+        points.push(new THREE.Vector3(x, y, z));
+      }
+      
+      const curve = new THREE.CatmullRomCurve3(points);
+      const orbitGeometry = new THREE.BufferGeometry().setFromPoints(
+        curve.getPoints(segments)
+      );
+      
+      const orbitMaterial = new THREE.LineBasicMaterial({
+        color: 0x6666ff,
+        transparent: true,
+        opacity: 0.5,
+        linewidth: 2
+      });
+      
+      return new THREE.Line(orbitGeometry, orbitMaterial);
     }
 
     // Raycaster for planet selection
@@ -475,30 +560,57 @@ const planetData = [
       requestAnimationFrame(animate);
       time += 0.01; // Time increment
 
+      let earthPosition = { x: 0, y: 0, z: 0 }; // Default position
+      
+      // First update all planets except the Moon
       planets.forEach(planet => {
+        if (planet.data.isMoon) return; // Skip Moon, we'll handle it after Earth
+        
         // Rotate planet model around its local Y axis (simulating rotation)
         planet.mesh.rotation.y += planet.data.rotationSpeed;
 
-        if (planet.data.name !== "Sun" && !planet.data.isMoon) {
+        if (planet.data.name !== "Sun") {
           const position = calculateEllipticalPosition(planet, time);
 
           // Position the planet on its orbit
           planet.mesh.position.x = position.x;
           planet.mesh.position.y = 0;
           planet.mesh.position.z = position.z;
-        } else if (planet.data.isMoon) {
-          // Find Earth's orbit group to attach the moon to
-          const earth = planets.find(p => p.data.name === "Earth");
-            if (earth) {
-              // Simple circular orbit around Earth for now
-              const angle = time * planet.data.orbitSpeed;
-              const distance = planet.data.semiMajorAxis; // Distance from Earth
-              planet.mesh.position.x = earth.mesh.position.x + distance * Math.cos(angle);
-              planet.mesh.position.y = earth.mesh.position.y; // Assuming orbit is in the same plane as Earth for simplicity
-              planet.mesh.position.z = earth.mesh.position.z + distance * Math.sin(angle);
-            }
+          
+          // Store Earth's position for the Moon
+          if (planet.data.name === "Earth") {
+            earthPosition = {
+              x: position.x,
+              y: 0,
+              z: position.z
+            };
+          }
         }
       });
+      
+      // Now handle the Moon's position and orbit after Earth has been updated
+      const moonPlanet = planets.find(p => p.data.name === "Moon");
+      if (moonPlanet && moonSystem.moonGroup && moonSystem.moonMesh) {
+        // Rotate the Moon around its axis
+        moonSystem.moonMesh.rotation.y += moonPlanet.data.rotationSpeed;
+        
+        // Calculate Moon's position around Earth
+        const moonAngle = time * moonPlanet.data.orbitSpeed;
+        const moonDistance = moonPlanet.data.semiMajorAxis;
+        const moonX = moonDistance * Math.cos(moonAngle);
+        const moonZ = moonDistance * Math.sin(moonAngle);
+        
+        // Position the Moon's entire group (orbit + Moon) to follow Earth
+        moonSystem.moonGroup.position.copy(new THREE.Vector3(earthPosition.x, earthPosition.y, earthPosition.z));
+        
+        // Ensure the Moon model moves in its orbit path
+        moonSystem.moonMesh.position.set(moonX, 0, moonZ);
+        
+        // Debug output to verify Moon is being updated
+        if (time % 5 < 0.01) {
+          console.log("Moon position:", moonX, moonZ, "Earth position:", earthPosition);
+        }
+      }
 
       controls.update();
       renderer.render(scene, camera);
