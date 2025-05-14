@@ -1,5 +1,4 @@
 import React from 'react';
-import "../../styles/styles.css";
 
 const Header = ({ title, paragraph, backgroundImage }) => {
   // Use default values if props aren't provided

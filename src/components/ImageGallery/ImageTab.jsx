@@ -1,5 +1,4 @@
 import React from 'react';
-import "../../styles/gallery.css"
 
 const ImageTabs = ({ activeTab, setActiveTab }) => {
   const tabs = [

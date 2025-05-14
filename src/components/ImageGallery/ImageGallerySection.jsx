@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import ImageTabs from './ImageTab';
 import ImageGrid from './ImageGrid';
 import * as spaceAPI from '../../api/spaceAPI';
-import '../../styles/gallery.css';
 
 const ImageGallerySection = () => {
   const [activeTab, setActiveTab] = useState('spacex');

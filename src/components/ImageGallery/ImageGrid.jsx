@@ -1,6 +1,5 @@
 import React from 'react';
 import LoadingSpinner from '../Common/LoadingSpinner';
-import '../../styles/gallery.css';
 
 const ImageGrid = ({ images, loading }) => {
   if (loading) {
