@@ -75,7 +75,7 @@ const planetData = [
     initialAngle: 0,
     description: "The Sun is the star at the center of our Solar System. It's a nearly perfect sphere of hot plasma, with internal convective motion that generates a magnetic field.",
     modelPath: 'src/Models/Sun.glb',
-    modelScale: 15 // Sun is about 109 times Earth's diameter
+    modelScale: 5 // Sun is about 109 times Earth's diameter
   },
   {
     name: "Mercury",
@@ -89,7 +89,7 @@ const planetData = [
     color: 0xa9a9a9,
     description: "Mercury is the smallest and innermost planet in the Solar System. It completes an orbit around the Sun every 88 Earth days.",
     modelPath: 'src/Models/Mercury.glb',
-    modelScale: 3 // Mercury is about 0.38 times Earth's diameter
+    modelScale: 1 // Mercury is about 0.38 times Earth's diameter
   },
   {
     name: "Venus", 
@@ -103,7 +103,7 @@ const planetData = [
     color: 0xe6e6e6,
     description: "Venus is the second planet from the Sun and Earth's closest planetary neighbor. It's similar in structure and size to Earth, but its thick atmosphere traps heat in a runaway greenhouse effect.",
     modelPath: 'src/Models/Venus.glb',
-    modelScale: 5 // Venus is about 0.95 times Earth's diameter
+    modelScale: 1.6666666666666667 // Venus is about 0.95 times Earth's diameter
   },
   {
     name: "Earth",
@@ -117,7 +117,7 @@ const planetData = [
     color: 0x3366ff,
     description: "Earth is the third planet from the Sun and the only astronomical object known to harbor life. About 71% of Earth's surface is water-covered.",
     modelPath: 'src/Models/Earth.glb',
-    modelScale: 6 // Earth is our reference point (1x)
+    modelScale: 2 // Earth is our reference point (1x)
   },
   {
     name: "Moon",
@@ -129,8 +129,8 @@ const planetData = [
     rotationSpeed: 0.01, 
     orbitSpeed: 0.05, 
     isMoon: true, 
-    parentPlanet: "Earth", 
-    modelScale: 2, // Moon is about 0.27 times Earth's diameter
+    parentPlanet: "Earth", // Parent planet for moons
+    modelScale: 0.6, // Moon is about 0.27 times Earth's diameter
     description: "The Moon is Earth's only natural satellite. It is the fifth-largest satellite in the Solar System and the largest among planetary satellites relative to the size of the planet that it orbits."
   },
   {
@@ -145,7 +145,7 @@ const planetData = [
     color: 0xcc3300,
     description: "Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System. Known as the 'Red Planet' due to its reddish appearance from iron oxide on its surface.",
     modelPath: 'src/Models/Mars.glb',
-    modelScale: 4 // Mars is about 0.53 times Earth's diameter
+    modelScale: 1.3 // Mars is about 0.53 times Earth's diameter
   },
   {
     name: "Jupiter",
@@ -159,7 +159,7 @@ const planetData = [
     color: 0xe6b800,
     description: "Jupiter is the fifth planet from the Sun and the largest in the Solar System. It's a gas giant with a mass two and a half times that of all the other planets combined.",
     modelPath: 'src/Models/Jupiter.glb',
-    modelScale: 10 // Jupiter is about 11.2 times Earth's diameter
+    modelScale: 3.3 // Jupiter is about 11.2 times Earth's diameter
   },
   {
     name: "Saturn",
@@ -173,7 +173,7 @@ const planetData = [
     color: 0xd9c36c,
     description: "Saturn is the sixth planet from the Sun and has the most extensive ring system of any planet. It's known for its prominent rings, which are mostly made of ice particles with a smaller amount of rocky debris.",
     modelPath: 'src/Models/Saturn.glb',
-    modelScale: 1 // Saturn is about 9.45 times Earth's diameter (not including rings)
+    modelScale: 2.35 // Saturn is about 9.45 times Earth's diameter (not including rings)
   },
   {
     name: "Uranus",
@@ -187,7 +187,7 @@ const planetData = [
     color: 0x99ccff,
     description: "Uranus is the seventh planet from the Sun. It has the third-largest planetary radius and fourth-largest planetary mass in the Solar System. Like the other gas giants, it has no solid surface.",
     modelPath: 'src/Models/Uranus.glb',
-    modelScale: 8 // Uranus is about 4 times Earth's diameter
+    modelScale: 2.6 // Uranus is about 4 times Earth's diameter
   },
   {
     name: "Neptune",
@@ -201,7 +201,7 @@ const planetData = [
     color: 0x0066ff,
     description: "Neptune is the eighth and farthest planet from the Sun. It's the fourth-largest planet by diameter and the densest giant planet. Neptune's atmosphere features active and visible weather patterns.",
     modelPath: 'src/Models/Neptune.glb',
-    modelScale: 7// Neptune is about 3.88 times Earth's diameter
+    modelScale: 2.3 // Neptune is about 3.88 times Earth's diameter
   }
 ];
 
@@ -211,7 +211,7 @@ const planetData = [
 
    // Scene setup
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 15000);
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 45000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     containerRef.current.appendChild(renderer.domElement);
@@ -249,7 +249,7 @@ const planetData = [
       });
 
       const starsVertices = [];
-      for (let i = 0; i < 50000; i++) {
+      for (let i = 0; i < 1000; i++) {
         const x = Math.random() * 120000 - 60000;
         const y = Math.random() * 120000 - 60000;
         const z = Math.random() * 120000 - 60000;
@@ -487,16 +487,16 @@ const planetData = [
           planet.mesh.position.y = 0;
           planet.mesh.position.z = position.z;
         } else if (planet.data.isMoon) {
- // Find Earth's orbit group to attach the moon to
+          // Find Earth's orbit group to attach the moon to
           const earth = planets.find(p => p.data.name === "Earth");
- if (earth) {
- // Simple circular orbit around Earth for now
- const angle = time * planet.data.orbitSpeed;
-            const distance = planet.data.semiMajorAxis; // Distance from Earth
-            planet.mesh.position.x = earth.mesh.position.x + distance * Math.cos(angle);
-            planet.mesh.position.y = earth.mesh.position.y; // Assuming orbit is in the same plane as Earth for simplicity
-            planet.mesh.position.z = earth.mesh.position.z + distance * Math.sin(angle);
- }
+            if (earth) {
+              // Simple circular orbit around Earth for now
+              const angle = time * planet.data.orbitSpeed;
+              const distance = planet.data.semiMajorAxis; // Distance from Earth
+              planet.mesh.position.x = earth.mesh.position.x + distance * Math.cos(angle);
+              planet.mesh.position.y = earth.mesh.position.y; // Assuming orbit is in the same plane as Earth for simplicity
+              planet.mesh.position.z = earth.mesh.position.z + distance * Math.sin(angle);
+            }
         }
       });
 
