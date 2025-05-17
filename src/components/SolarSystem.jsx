@@ -75,11 +75,11 @@ const planetData = [
     initialAngle: 0,
     description: "The Sun is the star at the center of our Solar System. It's a nearly perfect sphere of hot plasma, with internal convective motion that generates a magnetic field.",
     modelPath: 'src/Models/Sun.glb',
-    modelScale: 5 // Sun is about 109 times Earth's diameter
+    modelScale: 16 // Sun is about 109 times Earth's diameter
   },
   {
     name: "Mercury",
-    semiMajorAxis: 3600, // 0.39 AU scaled
+    semiMajorAxis: 5200, // 0.39 AU scaled
     eccentricity: 0.2056,
     inclination: 7.0,
     axialTilt: 0.03,
@@ -93,7 +93,7 @@ const planetData = [
   },
   {
     name: "Venus", 
-    semiMajorAxis: 5600, // 0.72 AU scaled
+    semiMajorAxis: 7600, // 0.72 AU scaled
     eccentricity: 0.0068,
     inclination: 3.39,
     axialTilt: 177.4,
@@ -107,7 +107,7 @@ const planetData = [
   },
   {
     name: "Earth",
-    semiMajorAxis: 7600, // 1 AU (baseline)
+    semiMajorAxis: 9000, // 1 AU (baseline)
     eccentricity: 0.0167,
     inclination: 0.0,
     axialTilt: 23.44,
@@ -123,7 +123,7 @@ const planetData = [
     name: "Moon",
     modelPath: "src/Models/Moon.glb",
     semiMajorAxis: 500, // Scaled distance from Earth
-    eccentricity: 0.0549,
+    eccentricity: 0.0549, // Actual Moon eccentricity
     inclination: 5.14, 
     axialTilt: 6.68, 
     rotationSpeed: 0.01, 
@@ -135,7 +135,7 @@ const planetData = [
   },
   {
     name: "Mars",
-    semiMajorAxis: 9600, // 1.52 AU scaled
+    semiMajorAxis: 11000, // 1.52 AU scaled
     eccentricity: 0.0934,
     inclination: 1.85,
     axialTilt: 25.19,
@@ -149,7 +149,7 @@ const planetData = [
   },
   {
     name: "Jupiter",
-    semiMajorAxis: 11600, // 5.2 AU scaled
+    semiMajorAxis: 21200,
     eccentricity: 0.0484,
     inclination: 1.31,
     axialTilt: 3.13,
@@ -159,11 +159,11 @@ const planetData = [
     color: 0xe6b800,
     description: "Jupiter is the fifth planet from the Sun and the largest in the Solar System. It's a gas giant with a mass two and a half times that of all the other planets combined.",
     modelPath: 'src/Models/Jupiter.glb',
-    modelScale: 3.3 // Jupiter is about 11.2 times Earth's diameter
+    modelScale: 8
   },
   {
     name: "Saturn",
-    semiMajorAxis: 13600, // 9.58 AU scaled
+    semiMajorAxis: 26400, // 9.58 AU scaled * 2
     eccentricity: 0.0539,
     inclination: 2.49,
     axialTilt: 26.73,
@@ -173,11 +173,11 @@ const planetData = [
     color: 0xd9c36c,
     description: "Saturn is the sixth planet from the Sun and has the most extensive ring system of any planet. It's known for its prominent rings, which are mostly made of ice particles with a smaller amount of rocky debris.",
     modelPath: 'src/Models/Saturn.glb',
-    modelScale: 2.35 // Saturn is about 9.45 times Earth's diameter (not including rings)
+    modelScale: 6
   },
   {
     name: "Uranus",
-    semiMajorAxis: 15600, // 19.2 AU scaled
+    semiMajorAxis: 31000, // 19.2 AU scaled * 2
     eccentricity: 0.0473,
     inclination: 0.77,
     axialTilt: 97.77,
@@ -187,11 +187,11 @@ const planetData = [
     color: 0x99ccff,
     description: "Uranus is the seventh planet from the Sun. It has the third-largest planetary radius and fourth-largest planetary mass in the Solar System. Like the other gas giants, it has no solid surface.",
     modelPath: 'src/Models/Uranus.glb',
-    modelScale: 2.6 // Uranus is about 4 times Earth's diameter
+    modelScale: 4 // Uranus is about 4 times Earth's diameter
   },
   {
     name: "Neptune",
-    semiMajorAxis: 17600, // 30.1 AU scaled
+    semiMajorAxis: 34800, // 30.1 AU scaled * 2
     eccentricity: 0.0086,
     inclination: 1.77,
     axialTilt: 28.32,
@@ -201,7 +201,7 @@ const planetData = [
     color: 0x0066ff,
     description: "Neptune is the eighth and farthest planet from the Sun. It's the fourth-largest planet by diameter and the densest giant planet. Neptune's atmosphere features active and visible weather patterns.",
     modelPath: 'src/Models/Neptune.glb',
-    modelScale: 2.3 // Neptune is about 3.88 times Earth's diameter
+    modelScale: 4 // Neptune is about 3.88 times Earth's diameter
   }
 ];
 
@@ -211,7 +211,7 @@ const planetData = [
 
    // Scene setup
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 45000);
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 60000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     containerRef.current.appendChild(renderer.domElement);
@@ -377,8 +377,12 @@ const planetData = [
             data: moonData
           });
           
-          // Create orbit for Moon - we'll position this relative to Earth
-          moonSystem.moonOrbit = createCircularOrbit(moonData.semiMajorAxis);
+          // Create elliptical orbit for Moon - properly implementing its elliptical path
+          moonSystem.moonOrbit = createEllipticalOrbit(
+            moonData.semiMajorAxis, 
+            moonData.eccentricity,
+            0
+          );
           moonSystem.moonGroup.add(moonSystem.moonOrbit);
           
           // Apply inclination to the Moon's orbit
@@ -429,35 +433,6 @@ const planetData = [
 
       const orbit = new THREE.Line(orbitGeometry, orbitMaterial);
       return orbit;
-    }
-    
-    // Function to create circular orbit path (for the Moon)
-    function createCircularOrbit(radius) {
-      const segments = 64;
-      const points = [];
-      
-      for (let i = 0; i <= segments; i++) {
-        const theta = (i / segments) * Math.PI * 2;
-        const x = radius * Math.cos(theta);
-        const y = 0;
-        const z = radius * Math.sin(theta);
-        
-        points.push(new THREE.Vector3(x, y, z));
-      }
-      
-      const curve = new THREE.CatmullRomCurve3(points);
-      const orbitGeometry = new THREE.BufferGeometry().setFromPoints(
-        curve.getPoints(segments)
-      );
-      
-      const orbitMaterial = new THREE.LineBasicMaterial({
-        color: 0x6666ff,
-        transparent: true,
-        opacity: 0.5,
-        linewidth: 2
-      });
-      
-      return new THREE.Line(orbitGeometry, orbitMaterial);
     }
 
     // Raycaster for planet selection
@@ -594,22 +569,14 @@ const planetData = [
         // Rotate the Moon around its axis
         moonSystem.moonMesh.rotation.y += moonPlanet.data.rotationSpeed;
         
-        // Calculate Moon's position around Earth
-        const moonAngle = time * moonPlanet.data.orbitSpeed;
-        const moonDistance = moonPlanet.data.semiMajorAxis;
-        const moonX = moonDistance * Math.cos(moonAngle);
-        const moonZ = moonDistance * Math.sin(moonAngle);
+        // Calculate Moon's position using the elliptical orbit equations
+        const moonPosition = calculateEllipticalPosition(moonPlanet, time);
         
         // Position the Moon's entire group (orbit + Moon) to follow Earth
         moonSystem.moonGroup.position.copy(new THREE.Vector3(earthPosition.x, earthPosition.y, earthPosition.z));
         
-        // Ensure the Moon model moves in its orbit path
-        moonSystem.moonMesh.position.set(moonX, 0, moonZ);
-        
-        // Debug output to verify Moon is being updated
-        if (time % 5 < 0.01) {
-          console.log("Moon position:", moonX, moonZ, "Earth position:", earthPosition);
-        }
+        // Ensure the Moon model moves in its elliptical orbit path
+        moonSystem.moonMesh.position.set(moonPosition.x, 0, moonPosition.z);
       }
 
       controls.update();
