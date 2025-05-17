@@ -42,7 +42,8 @@ Summary
 Image URL (optional)
 Site Name
 ```
-5. Image Schema: ```
+5. Image Schema: 
+```
 Unique image ID
 Title
 URL
