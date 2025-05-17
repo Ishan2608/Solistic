@@ -39,7 +39,10 @@ function APOD() {
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />; // Using our new ErrorMessage component
   if (!apodData) return null;
-
+  
+  // Determine if the explanation needs the "Read More" button
+  const needsReadMore = apodData.explanation && apodData.explanation.length > 300;
+  
   return (
     <div className='apod-sect'>
       <h1 className="txt-lg apod-sect-title">
@@ -56,13 +59,19 @@ function APOD() {
         <div className="apod-details">
           <h3 className="txt-lg">{apodData.title}</h3>
           <p className="apod-date">{apodData.date}</p>
-          <p className="apod-explanation">
-            {expanded ? apodData.explanation : truncateText(apodData.explanation, 300)}
-            {apodData.explanation.length > 300 && (
-              <button onClick={() => setExpanded(!expanded)} className="read-more-btn">
+          <div className="apod-explanation">
+            <p>
+              {expanded ? apodData.explanation : truncateText(apodData.explanation, 80)}
+            </p>
+            {needsReadMore && (
+              <button 
+                onClick={() => setExpanded(!expanded)} 
+                className="read-more-btn"
+              >
                 {expanded ? 'Read Less' : 'Read More'}
               </button>
-            )}</p>
+            )}
+          </div>
           <p className="apod-copyright">
             {apodData.copyright && `Copyright: ${apodData.copyright}`}
           </p>

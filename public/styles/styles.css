@@ -513,6 +513,14 @@ Astronomical Picture of the Day (APOD)
   color: #aaa; /* Lighter date color for visibility */
 }
 
+.read-more-btn{
+  background: transparent;
+  border: none;
+  padding: 5px 0px;
+  font: inherit;
+  color: lightblue;
+}
+
 /* Error Component Styling */
 .error-container {
   width: 100%;

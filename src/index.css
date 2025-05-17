@@ -10,10 +10,14 @@
   /* border: 1px solid gray; */
 }
 
-
 body{
   background-color: black;
   color: white;
+}
+
+button:hover{
+  cursor: pointer;
+  font-weight: 900;
 }
 
 .light-txt {
