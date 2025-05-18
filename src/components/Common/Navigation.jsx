@@ -37,7 +37,7 @@ function Navigation() {
         {/* Navigation Logo */}
         <div className="logo-container">
           <Link to="/" id="nav-logo-link" className="centered">    
-            <img id="nav-logo-img" src="../../../public/assets/logo.jpg" alt="Logo" />
+            <img id="nav-logo-img" src="public/assets/logo.jpg" alt="Logo" />
           </Link>
         </div>
 
@@ -60,11 +60,7 @@ function Navigation() {
         {/* Sign-Up Button */}
         <div className="nav-right row even-center">
           <button className="hidden md:block">
-            <Link
-              to="/auth"
-            >
-              Sign In
-            </Link>
+            <Link to="/auth" > Sign In </Link>
           </button>
           <Link to="/profile" className="centered">
             <FontAwesomeIcon 
