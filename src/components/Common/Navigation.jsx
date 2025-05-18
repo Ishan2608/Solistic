@@ -37,7 +37,7 @@ function Navigation() {
         {/* Navigation Logo */}
         <div className="logo-container">
           <Link to="/" id="nav-logo-link" className="centered">    
-            <img id="nav-logo-img" src="public/assets/logo.jpg" alt="Logo" />
+            <img id="nav-logo-img" src="/assets/logo.jpg" alt="Logo" />
           </Link>
         </div>
 
