@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-// CSS styles
+// CSS styles remain the same
 const styles = {
   solarBody: {
     padding: 0,
@@ -61,14 +61,12 @@ const SolarSystemWithModels = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
-// planet data with realistic proportions
+// Revised planet data with well-spaced circular orbits
 const planetData = [
   {
     name: "Sun",
     distance: 0,
-    semiMajorAxis: 0,
-    eccentricity: 0,
-    inclination: 0,
+    orbitRadius: 0,
     axialTilt: 7.25,
     rotationSpeed: 0.001,
     orbitSpeed: 0,
@@ -79,9 +77,7 @@ const planetData = [
   },
   {
     name: "Mercury",
-    semiMajorAxis: 5200, // 0.39 AU scaled
-    eccentricity: 0.2056,
-    inclination: 7.0,
+    orbitRadius: 3000, // Increased spacing between planets
     axialTilt: 0.03,
     rotationSpeed: 0.004,
     orbitSpeed: 0.008,
@@ -93,9 +89,7 @@ const planetData = [
   },
   {
     name: "Venus", 
-    semiMajorAxis: 7600, // 0.72 AU scaled
-    eccentricity: 0.0068,
-    inclination: 3.39,
+    orbitRadius: 5500, // Increased spacing
     axialTilt: 177.4,
     rotationSpeed: 0.002,
     orbitSpeed: 0.006,
@@ -103,13 +97,11 @@ const planetData = [
     color: 0xe6e6e6,
     description: "Venus is the second planet from the Sun and Earth's closest planetary neighbor. It's similar in structure and size to Earth, but its thick atmosphere traps heat in a runaway greenhouse effect.",
     modelPath: 'src/Models/Venus.glb',
-    modelScale: 1.6666666666666667 // Venus is about 0.95 times Earth's diameter
+    modelScale: 1.67 // Venus is about 0.95 times Earth's diameter
   },
   {
     name: "Earth",
-    semiMajorAxis: 9000, // 1 AU (baseline)
-    eccentricity: 0.0167,
-    inclination: 0.0,
+    orbitRadius: 8000, // Increased spacing
     axialTilt: 23.44,
     rotationSpeed: 0.01,
     orbitSpeed: 0.005,
@@ -122,9 +114,7 @@ const planetData = [
   {
     name: "Moon",
     modelPath: "src/Models/Moon.glb",
-    semiMajorAxis: 500, // Scaled distance from Earth
-    eccentricity: 0.0549, // Actual Moon eccentricity
-    inclination: 5.14, 
+    orbitRadius: 500, // Scaled distance from Earth
     axialTilt: 6.68, 
     rotationSpeed: 0.01, 
     orbitSpeed: 0.05, 
@@ -135,9 +125,7 @@ const planetData = [
   },
   {
     name: "Mars",
-    semiMajorAxis: 11000, // 1.52 AU scaled
-    eccentricity: 0.0934,
-    inclination: 1.85,
+    orbitRadius: 12000, // Increased spacing
     axialTilt: 25.19,
     rotationSpeed: 0.008,
     orbitSpeed: 0.004,
@@ -149,9 +137,7 @@ const planetData = [
   },
   {
     name: "Jupiter",
-    semiMajorAxis: 21200,
-    eccentricity: 0.0484,
-    inclination: 1.31,
+    orbitRadius: 20000, // Increased spacing
     axialTilt: 3.13,
     rotationSpeed: 0.01,
     orbitSpeed: 0.002,
@@ -163,9 +149,7 @@ const planetData = [
   },
   {
     name: "Saturn",
-    semiMajorAxis: 26400, // 9.58 AU scaled * 2
-    eccentricity: 0.0539,
-    inclination: 2.49,
+    orbitRadius: 28000, // Increased spacing
     axialTilt: 26.73,
     rotationSpeed: 0.008,
     orbitSpeed: 0.0015,
@@ -177,9 +161,7 @@ const planetData = [
   },
   {
     name: "Uranus",
-    semiMajorAxis: 31000, // 19.2 AU scaled * 2
-    eccentricity: 0.0473,
-    inclination: 0.77,
+    orbitRadius: 36000, // Increased spacing
     axialTilt: 97.77,
     rotationSpeed: 0.012,
     orbitSpeed: 0.001,
@@ -191,9 +173,7 @@ const planetData = [
   },
   {
     name: "Neptune",
-    semiMajorAxis: 34800, // 30.1 AU scaled * 2
-    eccentricity: 0.0086,
-    inclination: 1.77,
+    orbitRadius: 44000, // Increased spacing
     axialTilt: 28.32,
     rotationSpeed: 0.01,
     orbitSpeed: 0.0008,
@@ -211,31 +191,32 @@ const planetData = [
 
    // Scene setup
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 60000);
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     containerRef.current.appendChild(renderer.domElement);
 
-    // Camera position - moved further back to see the expanded solar system
-    camera.position.set(0, 2000, 5000);
+    // Camera position - adjusted for better view of the expanded system
+    camera.position.set(0, 15000, 30000);
 
     // Create controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
+    controls.maxDistance = 80000; // Allow zooming out to see the entire system
 
     // Lighting
     const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.PointLight(0xffffff, 2, 10000);
+    const sunLight = new THREE.PointLight(0xffffff, 2, 100000);
     scene.add(sunLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(100, 100, 100);
     scene.add(directionalLight);
 
-    // Solar system tilt group
+    // Solar system group
     const solarSystem = new THREE.Group();
     scene.add(solarSystem);
 
@@ -249,10 +230,10 @@ const planetData = [
       });
 
       const starsVertices = [];
-      for (let i = 0; i < 1000; i++) {
-        const x = Math.random() * 120000 - 60000;
-        const y = Math.random() * 120000 - 60000;
-        const z = Math.random() * 120000 - 60000;
+      for (let i = 0; i < 2000; i++) { // More stars
+        const x = Math.random() * 200000 - 100000;
+        const y = Math.random() * 200000 - 100000;
+        const z = Math.random() * 200000 - 100000;
         starsVertices.push(x, y, z);
       }
 
@@ -329,15 +310,8 @@ const planetData = [
 
           // Create orbit path for planets, not for the sun
           if (planet.name !== "Sun") {
-            const orbit = createEllipticalOrbit(
-              planet.semiMajorAxis,
-              planet.eccentricity,
-              0 // We'll handle inclination at the group level
-            );
+            const orbit = createCircularOrbit(planet.orbitRadius);
             planetOrbitGroup.add(orbit);
-
-            // Apply inclination to the entire orbit group
-            planetOrbitGroup.rotation.x = (planet.inclination * Math.PI) / 180;
           }
         },
         undefined, // onProgress callback is handled by the manager
@@ -377,16 +351,9 @@ const planetData = [
             data: moonData
           });
           
-          // Create elliptical orbit for Moon - properly implementing its elliptical path
-          moonSystem.moonOrbit = createEllipticalOrbit(
-            moonData.semiMajorAxis, 
-            moonData.eccentricity,
-            0
-          );
+          // Create circular orbit for Moon
+          moonSystem.moonOrbit = createCircularOrbit(moonData.orbitRadius);
           moonSystem.moonGroup.add(moonSystem.moonOrbit);
-          
-          // Apply inclination to the Moon's orbit
-          moonSystem.moonGroup.rotation.x = (moonData.inclination * Math.PI) / 180;
           
           console.log("Moon loaded successfully");
         },
@@ -397,41 +364,31 @@ const planetData = [
       );
     }
 
-    // Function to create elliptical orbit path
-    function createEllipticalOrbit(semiMajorAxis, eccentricity, inclination) {
+    // Function to create circular orbit path
+    function createCircularOrbit(radius) {
       const segments = 128;
+      const circleGeometry = new THREE.BufferGeometry();
       const points = [];
-
-      // Calculate semi-minor axis: b = a * sqrt(1 - e²)
-      const semiMinorAxis = semiMajorAxis * Math.sqrt(1 - eccentricity * eccentricity);
-
-      // Calculate focus distance: c = a * e
-      const focusDistance = semiMajorAxis * eccentricity;
-
-      // Create ellipse path
+      
       for (let i = 0; i <= segments; i++) {
         const theta = (i / segments) * Math.PI * 2;
-        const x = semiMajorAxis * Math.cos(theta) - focusDistance; // Shift to put Sun at focus
+        const x = radius * Math.cos(theta);
         const y = 0;
-        const z = semiMinorAxis * Math.sin(theta);
-
+        const z = radius * Math.sin(theta);
+        
         points.push(new THREE.Vector3(x, y, z));
       }
-
-      // Create curve and geometry
-      const curve = new THREE.CatmullRomCurve3(points);
-      const orbitGeometry = new THREE.BufferGeometry().setFromPoints(
-        curve.getPoints(segments)
-      );
-
+      
+      circleGeometry.setFromPoints(points);
+      
       const orbitMaterial = new THREE.LineBasicMaterial({
-        color: 0x666666,
+        color: 0x888888,
         transparent: true,
         opacity: 0.5,
-        linewidth: 3
+        linewidth: 2
       });
-
-      const orbit = new THREE.Line(orbitGeometry, orbitMaterial);
+      
+      const orbit = new THREE.Line(circleGeometry, orbitMaterial);
       return orbit;
     }
 
@@ -508,24 +465,11 @@ const planetData = [
     };
     window.addEventListener('resize', handleResize);
 
-    // Function to calculate planet position on elliptical orbit
-    function calculateEllipticalPosition(planet, time) {
-      const a = planet.data.semiMajorAxis;
-      const e = planet.data.eccentricity;
-      const initialAngle = planet.data.initialAngle || 0;
-
-      const M = (time * planet.data.orbitSpeed * 2 * Math.PI) + initialAngle;
-
-      // Solve Kepler's equation for eccentric anomaly E
-      let E = M;
-      for (let i = 0; i < 5; i++) {
-        E = M + e * Math.sin(E);
-      }
-
-      // Calculate position on the ellipse
-      const x = a * (Math.cos(E) - e);
-      const z = a * Math.sqrt(1 - e * e) * Math.sin(E);
-
+    // Calculate position on circular orbit
+    function calculateCircularPosition(radius, speed, initialAngle, time) {
+      const angle = (time * speed * 2 * Math.PI) + initialAngle;
+      const x = radius * Math.cos(angle);
+      const z = radius * Math.sin(angle);
       return { x, z };
     }
 
@@ -545,7 +489,12 @@ const planetData = [
         planet.mesh.rotation.y += planet.data.rotationSpeed;
 
         if (planet.data.name !== "Sun") {
-          const position = calculateEllipticalPosition(planet, time);
+          const position = calculateCircularPosition(
+            planet.data.orbitRadius,
+            planet.data.orbitSpeed,
+            planet.data.initialAngle || 0,
+            time
+          );
 
           // Position the planet on its orbit
           planet.mesh.position.x = position.x;
@@ -569,13 +518,18 @@ const planetData = [
         // Rotate the Moon around its axis
         moonSystem.moonMesh.rotation.y += moonPlanet.data.rotationSpeed;
         
-        // Calculate Moon's position using the elliptical orbit equations
-        const moonPosition = calculateEllipticalPosition(moonPlanet, time);
+        // Calculate Moon's position on its circular orbit
+        const moonPosition = calculateCircularPosition(
+          moonPlanet.data.orbitRadius,
+          moonPlanet.data.orbitSpeed,
+          0,  // Initial angle
+          time
+        );
         
-        // Position the Moon's entire group (orbit + Moon) to follow Earth
+        // Position the Moon's entire group to follow Earth
         moonSystem.moonGroup.position.copy(new THREE.Vector3(earthPosition.x, earthPosition.y, earthPosition.z));
         
-        // Ensure the Moon model moves in its elliptical orbit path
+        // Position the Moon within its group
         moonSystem.moonMesh.position.set(moonPosition.x, 0, moonPosition.z);
       }
 
