@@ -27,8 +27,7 @@ function Navigation() {
     { path: "/", name: "Home" },
     { path: "/news", name: "News" },
     { path: "/image-gallery", name: "Image Gallery" },
-    { path: "/solar-system-simulator", name: "Solar System Simulator" },
-    { path: "/tutor", name: "Tutor" }
+    { path: "/solar-system-simulator", name: "Solar System Simulator" }
   ];
 
   return (
