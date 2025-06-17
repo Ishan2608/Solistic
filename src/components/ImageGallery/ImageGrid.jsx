@@ -40,6 +40,7 @@ const ImageGrid = ({ images, loading }) => {
                   : image.explanation}
               </p>
             )}
+            
           </div>
         </div>
       ))}

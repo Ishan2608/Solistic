@@ -1,55 +1,74 @@
-// src/components/News/LatestNews.js
-import React, { useState, useEffect } from 'react';
-import { fetchLatestNews } from '../../api/spaceAPI';
+// Featured News Component - Displays the latest/featured article
+const FeaturedNews = ({ article, onSave, isSaved }) => {
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
-const LatestNews = () => {
-  const [article, setArticle] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const handleSave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSave(article);
+  };
 
-  useEffect(() => {
-    const loadLatestNews = async () => {
-      try {
-        setLoading(true);
-        const newsData = await fetchLatestNews();
-        setArticle(newsData);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load the latest news. Please try again.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadLatestNews();
-  }, []);
-
-  if (loading) return <div className="loading">Loading latest news...</div>;
-  if (error) return <div className="error">{error}</div>;
-  if (!article) return <div className="no-news">No news available at the moment.</div>;
+  if (!article) return null;
 
   return (
-    <div className="latest-news">
-      <h2 id="news-heading">{article.title}</h2>
-      <h3 id="news-credit">Credit: {article.news_site}</h3>
-      <img 
-        id="news-image" 
-        src={article.image_url || "/placeholder-image.jpg"} 
-        alt={article.title} 
-      />
-      <p id="news-description">{article.summary}</p>
-      <a 
-        id="open-latest-news-article" 
-        href={article.url} 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="button"
-      >
-        Read Full Article
-      </a>
+    <div className="featured-news">
+      <div className="featured-content">
+        <div className="featured-text">
+          <div className="featured-meta">
+            <span className="featured-badge">Latest News</span>
+            <span className="featured-source">{article.news_site}</span>
+            <span className="featured-date">{formatDate(article.published_at)}</span>
+          </div>
+          <h2 className="featured-title">{article.title}</h2>
+          <p className="featured-summary">{article.summary}</p>
+          <div className="featured-actions">
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="featured-link"
+            >
+              Read Full Story →
+            </a>
+            <button
+              onClick={handleSave}
+              className={`featured-save-button ${isSaved ? 'saved' : ''}`}
+              title={isSaved ? 'Remove from saved' : 'Save for later'}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill={isSaved ? '#ff6b6b' : 'none'}
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+              </svg>
+              {isSaved ? 'Saved' : 'Save for Later'}
+            </button>
+          </div>
+        </div>
+        {article.image_url && (
+          <div className="featured-image">
+            <img
+              src={article.image_url}
+              alt={article.title}
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default LatestNews;
+export default FeaturedNews;
