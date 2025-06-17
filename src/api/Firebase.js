@@ -14,13 +14,13 @@ import { getFirestore } from 'firebase/firestore';
 //   };
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCs3yNVnExIUnIBurO96J4s65WTICEQp48",
-  authDomain: "solistic-9a3d3.firebaseapp.com",
-  projectId: "solistic-9a3d3",
-  storageBucket: "solistic-9a3d3.firebasestorage.app",
-  messagingSenderId: "184668625711",
-  appId: "1:184668625711:web:625f2cb2e3d873d6ac5fda",
-  measurementId: "G-W50XF4FTR1"
+  apiKey: import.meta.env.VITE_apiKey,
+  authDomain: import.meta.env.VITE_authDomain,
+  projectId: import.meta.env.VITE_projectId,
+  storageBucket: import.meta.env.VITE_storageBucket,
+  messagingSenderId: import.meta.env.VITE_messagingSenderId,
+  appId: import.meta.env.VITE_appId,
+  measurementId: import.meta.env.VITE_measurementId,
 };
 
 // Initialize Firebase
