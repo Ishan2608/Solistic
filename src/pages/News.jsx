@@ -4,7 +4,7 @@ import ErrorMessage from "../components/Common/ErrorMessage";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 
 import NewsCard from "../components/News/NewsCard";
-import FeaturedNews from "../components/News/LatestNews";
+import FeaturedNews from "../components/News/FeaturedNews";
 
 import { fetchMultipleNews, fetchLatestNews } from "../api/spaceAPI"; // Adjust import path as needed
 
