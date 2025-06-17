@@ -57,7 +57,11 @@ const EventCard = ({ event }) => {
         {event.type && <p><strong>Type:</strong> {event.type.name}</p>}
       </div>
       <div className="event-actions">
-        <button id="event-save-btn" className="button">Save Event</button>
+        <button 
+          id="event-save-btn" 
+          className={`button ${isSaved ? 'saved' : ''}`}
+          onClick={handleToggleSaveEvent}
+        >{isSaved ? 'Unsave Event' : 'Save Event'}</button>
         {event.video_url && (
           <a
             id="event-yt-btn"

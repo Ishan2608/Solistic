@@ -2,17 +2,6 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// Your web app's Firebase configuration
-// const firebaseConfig = {
-//     apiKey: "AIzaSyCnoz6I1TVgFQEsjM7v2wvUFk4FYh1cOPs",
-//     authDomain: "solisticone.firebaseapp.com",
-//     projectId: "solisticone",
-//     storageBucket: "solisticone.firebasestorage.app",
-//     messagingSenderId: "685524178439",
-//     appId: "1:685524178439:web:816c147f7b7bc6a2407ca2",
-//     measurementId: "G-YD1P4XCF4F"
-//   };
-
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_apiKey,
   authDomain: import.meta.env.VITE_authDomain,

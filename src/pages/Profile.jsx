@@ -1,8 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext'; // Import useAuth
 import NewsCard from '../components/News/NewsCard';
-import ImageGrid from '../components/ImageGallery/ImageGrid';
-import EventCard from '../components/Events/EventCard'; // Assuming EventCard is needed
 import LoadingSpinner from '../components/Common/LoadingSpinner'; // Assuming you have a LoadingSpinner component
 
 const Profile = () => {
