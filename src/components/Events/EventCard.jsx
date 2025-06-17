@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuth } from "../../context/AuthContext";
 
 const EventCard = ({ event }) => {
   if (!event) {
@@ -9,6 +10,32 @@ const EventCard = ({ event }) => {
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  // Access auth context
+  const { user, savedEvents, saveEvent, removeSavedEvent } = useAuth();
+
+  // Check if the current event is saved
+  // Assuming events have a unique 'id'. If not, you might need to use another unique property like 'name'.
+  const isSaved = user ? savedEvents.some(savedEvent => savedEvent.id === event.id) : false;
+
+  // Handle saving/unsaving the event
+  const handleToggleSaveEvent = async () => {
+    if (!user) {
+      alert("Please log in to save events.");
+      return;
+    }
+
+    try {
+      if (isSaved) {
+        await removeSavedEvent(event.id); // Use event.id to remove
+      } else {
+        await saveEvent(event); // Pass the full event object to save
+      }
+    } catch (error) {
+      console.error("Error toggling save status:", error);
+      alert("Failed to update saved status. Please try again.");
+    }
   };
 
   return (

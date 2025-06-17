@@ -3,16 +3,15 @@ import Header from "../components/Common/Header";
 import ErrorMessage from "../components/Common/ErrorMessage";
 import LoadingSpinner from "../components/Common/LoadingSpinner";
 
+import { useAuth } from "../context/AuthContext";
 import NewsCard from "../components/News/NewsCard";
 import FeaturedNews from "../components/News/FeaturedNews";
 
-import { fetchMultipleNews, fetchLatestNews } from "../api/spaceAPI"; // Adjust import path as needed
+import { fetchMultipleNews, fetchLatestNews } from "../api/spaceAPI";
 
 const HEADER_TITLE = "Space पत्रिका";
 const HEADER_PARA = "Stay updated on all stars through the cosmos.";
 const HEADER_BG_URL = "https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-
-
 
 // Main News Component
 const News = () => {
@@ -20,7 +19,9 @@ const News = () => {
   const [newsArticles, setNewsArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [savedArticles, setSavedArticles] = useState([]);
+  const [saveLoading, setSaveLoading] = useState(null); // Track which article is being saved
+  
+  const { user, savedNews, saveNews, removeSavedNews, isNewsSaved, isLoading: authLoading } = useAuth();
 
   // Function to load all news data
   const loadNewsData = async () => {
@@ -40,6 +41,7 @@ const News = () => {
       setNewsArticles(filteredArticles.slice(0, 9)); // Show 9 articles in grid
       
     } catch (err) {
+      console.error('Error loading news data:', err);
       setError(err.message || 'Failed to load space news');
     } finally {
       setLoading(false);
@@ -49,46 +51,60 @@ const News = () => {
   // Load data on component mount
   useEffect(() => {
     loadNewsData();
-    // Load saved articles from memory (in a real app, this would be from your backend/database)
-    loadSavedArticles();
   }, []);
 
-  // Function to load saved articles (placeholder - replace with actual API call)
-  const loadSavedArticles = () => {
-    // In a real application, you would fetch this from your backend
-    // For now, we'll use an empty array
-    setSavedArticles([]);
-  };
-
   // Function to handle saving/unsaving articles
-  const handleSaveArticle = (article) => {
-    setSavedArticles(prev => {
-      const isAlreadySaved = prev.some(saved => saved.id === article.id);
-      
-      if (isAlreadySaved) {
-        // Remove from saved articles
-        const updatedSaved = prev.filter(saved => saved.id !== article.id);
-        // Here you would make an API call to remove from backend
-        console.log('Removing article from saved:', article.title);
-        return updatedSaved;
-      } else {
-        // Add to saved articles
-        const updatedSaved = [...prev, article];
-        // Here you would make an API call to save to backend
-        console.log('Saving article:', article.title);
-        return updatedSaved;
-      }
-    });
-  };
+  const handleToggleSaveNews = async (article) => {
+    if (!user) {
+      alert("Please log in to save news.");
+      return;
+    }
 
-  // Function to check if an article is saved
-  const isArticleSaved = (articleId) => {
-    return savedArticles.some(saved => saved.id === articleId);
+    // Prevent multiple clicks while saving
+    if (saveLoading === article.id) {
+      return;
+    }
+
+    try {
+      setSaveLoading(article.id);
+      
+      const isArticleSaved = isNewsSaved(article.id);
+      let success = false;
+
+      if (isArticleSaved) {
+        success = await removeSavedNews(article.id);
+        if (success) {
+          console.log('Successfully removed article from saved:', article.title);
+        }
+      } else {
+        success = await saveNews(article);
+        if (success) {
+          console.log('Successfully saved article:', article.title);
+        }
+      }
+
+      // Show user feedback
+      if (!success) {
+        alert(isArticleSaved ? 'Failed to remove article from saved' : 'Failed to save article');
+      }
+
+    } catch (error) {
+      console.error('Error toggling save status:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setSaveLoading(null);
+    }
   };
 
   // Retry function for error handling
   const handleRetry = () => {
     loadNewsData();
+  };
+
+  // Helper function to check if article is saved (with loading state consideration)
+  const getIsSaved = (articleId) => {
+    if (authLoading || !user) return false;
+    return isNewsSaved(articleId);
   };
 
   return (
@@ -111,8 +127,9 @@ const News = () => {
             {featuredNews && (
               <FeaturedNews 
                 article={featuredNews} 
-                onSave={handleSaveArticle}
-                isSaved={isArticleSaved(featuredNews.id)}
+                onSave={handleToggleSaveNews}
+                isSaved={getIsSaved(featuredNews.id)}
+                isLoading={saveLoading === featuredNews.id}
               />
             )}
             
@@ -127,8 +144,9 @@ const News = () => {
                   <NewsCard 
                     key={article.id} 
                     article={article} 
-                    onSave={handleSaveArticle}
-                    isSaved={isArticleSaved(article.id)}
+                    onSave={handleToggleSaveNews}
+                    isSaved={getIsSaved(article.id)}
+                    isLoading={saveLoading === article.id}
                   />
                 ))}
               </div>
@@ -136,7 +154,6 @@ const News = () => {
           </>
         )}
       </main>
-
     </div>
   );
 };

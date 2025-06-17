@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons'; // Added faTimes
+import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../../context/AuthContext';
 
 library.add(faUser, faBars, faTimes);
 
 function Navigation() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isLoggedIn, user, logout } = useAuth();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -20,6 +22,13 @@ function Navigation() {
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
     document.body.style.overflow = '';
+  };
+
+  const handleLogout = () => {
+    logout();
+    closeMobileMenu();
+    // Optionally redirect to home
+    window.location.href = '/';
   };
 
   // Navigation links array for DRY code
@@ -56,21 +65,38 @@ function Navigation() {
           </ul>
         </div>
 
-        {/* Sign-Up Button */}
+        {/* Auth Section - Desktop */}
         <div className="nav-right row even-center">
-          <button className="hidden md:block">
-            <Link to="/auth" > Sign In </Link>
-          </button>
-          <Link to="/profile" className="centered">
-            <FontAwesomeIcon 
-              icon="fa-user" 
-              className="hidden md:block cursor-pointer hover:text-blue-400 transition-colors" 
-              aria-label="Go to profile"
-            />
-          </Link>
+          {isLoggedIn ? (
+            // Show when user is logged in
+            <>
+              <span className="hidden md:block text-sm text-gray-300 mr-3">
+                Welcome, {user?.username || user?.email?.split('@')[0]}
+              </span>
+              <Link to="/profile" className="centered mr-3">
+                <FontAwesomeIcon 
+                  icon="fa-user" 
+                  className="hidden md:block cursor-pointer hover:text-blue-400 transition-colors" 
+                  aria-label="Go to profile"
+                />
+              </Link>
+              <button 
+                className="hidden md:block logout-btn"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            // Show when user is not logged in
+            <button className="hidden md:block">
+              <Link to="/auth">Sign In</Link>
+            </button>
+          )}
+          
           <FontAwesomeIcon 
             icon={isMobileMenuOpen ? faTimes : faBars}
-            className="hamburger-icon cursor-pointer text-2xl md:text-lg" 
+            className="hamburger-icon cursor-pointer text-2xl md:text-lg ml-3" 
             onClick={toggleMobileMenu}
             aria-label="Toggle mobile menu"
           />
@@ -92,6 +118,7 @@ function Navigation() {
                 aria-label="Close menu"
               />
             </div>
+            
             {/* Mobile Navigation Links */}
             <ul className="mobile-menu-links">
               {navLinks.map((link) => (
@@ -105,19 +132,34 @@ function Navigation() {
                   </Link>
                 </li>
               ))}
-              {/* Mobile Sign In Button */}
-              <li className="mobile-sign-in">
-                <Link to="/auth" onClick={closeMobileMenu}>
-                  Sign In
-                </Link>
-              </li>
-              {/* Mobile Profile Button */}
-              <li className="mobile-profile">
-                <Link to="/profile" onClick={closeMobileMenu}>
-                  <FontAwesomeIcon icon="fa-user" className="mr-2" />
-                  Profile
-                </Link>
-              </li>
+              
+              {/* Mobile Auth Section */}
+              {isLoggedIn ? (
+                // Show when user is logged in - Mobile
+                <>
+                  <li className="mobile-user-info">
+                    <span>Welcome, {user?.username || user?.email?.split('@')[0]}</span>
+                  </li>
+                  <li className="mobile-profile">
+                    <Link to="/profile" onClick={closeMobileMenu}>
+                      <FontAwesomeIcon icon="fa-user" className="mr-2" />
+                      Profile
+                    </Link>
+                  </li>
+                  <li className="mobile-logout">
+                    <button onClick={handleLogout}>
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                // Show when user is not logged in - Mobile
+                <li className="mobile-sign-in">
+                  <Link to="/auth" onClick={closeMobileMenu}>
+                    Sign In
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>
@@ -218,6 +260,21 @@ function Navigation() {
           font-weight: bold;
         }
         
+        .mobile-user-info {
+          margin-top: 1rem;
+          padding: 0.5rem 1rem;
+          background-color: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+          text-align: center;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .mobile-user-info span {
+          color: #00aaff !important;
+          font-weight: bold;
+          font-size: 0.9rem;
+        }
+        
         .mobile-profile {
           margin-top: 1rem;
           padding: 0.75rem 1rem;
@@ -235,6 +292,43 @@ function Navigation() {
         .mobile-profile a {
           color: white !important;
           font-weight: bold;
+        }
+        
+        .mobile-logout {
+          margin-top: 1rem;
+          padding: 0.75rem 1rem;
+          background-color: #dc3545;
+          border-radius: 4px;
+          text-align: center;
+          border: 1px solid rgba(220, 53, 69, 0.3);
+          transition: background-color 0.2s;
+        }
+        
+        .mobile-logout:hover {
+          background-color: #c82333;
+        }
+        
+        .mobile-logout button {
+          color: white !important;
+          font-weight: bold;
+          background: none;
+          border: none;
+          cursor: pointer;
+          width: 100%;
+        }
+        
+        .logout-btn {
+          background-color: #dc3545;
+          color: white;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+        
+        .logout-btn:hover {
+          background-color: #c82333;
         }
         
         /* Responsive adjustments */

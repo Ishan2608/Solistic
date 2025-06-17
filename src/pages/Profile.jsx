@@ -1,153 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 import NewsCard from '../components/News/NewsCard';
 import ImageGrid from '../components/ImageGallery/ImageGrid';
-import EventCard from '../components/Events/EventCard';
-
-// Sample data (for demo purposes)
-const sampleSavedNews = [
-  {
-    id: 1,
-    title: "Mars Rover Discovers New Rock Formation",
-    summary: "NASA's Perseverance rover has discovered a unique rock formation that could provide clues about Mars' ancient climate.",
-    news_site: "Space.com",
-    published_at: new Date().toISOString(),
-    url: "#",
-    image_url: "https://via.placeholder.com/600x400?text=Mars+Rover"
-  },
-  {
-    id: 2,
-    title: "New Exoplanet Could Support Life",
-    summary: "Astronomers have discovered an Earth-like exoplanet orbiting in the habitable zone of its star.",
-    news_site: "Scientific American",
-    published_at: new Date().toISOString(),
-    url: "#",
-    image_url: "https://via.placeholder.com/600x400?text=Exoplanet"
-  },
-  {
-    id: 1,
-    title: "Mars Rover Discovers New Rock Formation",
-    summary: "NASA's Perseverance rover has discovered a unique rock formation that could provide clues about Mars' ancient climate.",
-    news_site: "Space.com",
-    published_at: new Date().toISOString(),
-    url: "#",
-    image_url: "https://via.placeholder.com/600x400?text=Mars+Rover"
-  },
-  {
-    id: 2,
-    title: "New Exoplanet Could Support Life",
-    summary: "Astronomers have discovered an Earth-like exoplanet orbiting in the habitable zone of its star.",
-    news_site: "Scientific American",
-    published_at: new Date().toISOString(),
-    url: "#",
-    image_url: "https://via.placeholder.com/600x400?text=Exoplanet"
-  }
-];
-
-const sampleSavedImages = [
-  {
-    id: "img1",
-    url: "https://via.placeholder.com/600x400?text=Galaxy+1",
-    title: "Andromeda Galaxy",
-    explanation: "The Andromeda Galaxy is the closest spiral galaxy to the Milky Way.",
-    date: "2023-09-15"
-  },
-  {
-    id: "img2",
-    url: "https://via.placeholder.com/600x400?text=Galaxy+2",
-    title: "Whirlpool Galaxy",
-    explanation: "The Whirlpool Galaxy is an interacting grand-design spiral galaxy.",
-    date: "2023-09-14"
-  },
-  {
-    id: "img1",
-    url: "https://via.placeholder.com/600x400?text=Galaxy+1",
-    title: "Andromeda Galaxy",
-    explanation: "The Andromeda Galaxy is the closest spiral galaxy to the Milky Way.",
-    date: "2023-09-15"
-  },
-  {
-    id: "img2",
-    url: "https://via.placeholder.com/600x400?text=Galaxy+2",
-    title: "Whirlpool Galaxy",
-    explanation: "The Whirlpool Galaxy is an interacting grand-design spiral galaxy.",
-    date: "2023-09-14"
-  }
-];
-
-const sampleSavedEvents = [
-  {
-    name: "Lunar Eclipse 2024",
-    description: "Total lunar eclipse visible across North America.",
-    feature_image: "https://via.placeholder.com/600x400?text=Lunar+Eclipse",
-    date: new Date().toISOString(),
-    location: { name: "North America" },
-    type: { name: "Eclipse" },
-    video_url: "#",
-    news_url: "#"
-  },
-  {
-    name: "ISS Spacewalk",
-    description: "Two astronauts will conduct a spacewalk outside the International Space Station.",
-    feature_image: "https://via.placeholder.com/600x400?text=ISS+Spacewalk",
-    date: new Date().toISOString(),
-    location: { name: "Low Earth Orbit" },
-    type: { name: "Spacewalk" },
-    video_url: "#",
-    news_url: "#"
-  },
-  {
-    name: "Lunar Eclipse 2024",
-    description: "Total lunar eclipse visible across North America.",
-    feature_image: "https://via.placeholder.com/600x400?text=Lunar+Eclipse",
-    date: new Date().toISOString(),
-    location: { name: "North America" },
-    type: { name: "Eclipse" },
-    video_url: "#",
-    news_url: "#"
-  },
-  {
-    name: "ISS Spacewalk",
-    description: "Two astronauts will conduct a spacewalk outside the International Space Station.",
-    feature_image: "https://via.placeholder.com/600x400?text=ISS+Spacewalk",
-    date: new Date().toISOString(),
-    location: { name: "Low Earth Orbit" },
-    type: { name: "Spacewalk" },
-    video_url: "#",
-    news_url: "#"
-  }
-];
+import EventCard from '../components/Events/EventCard'; // Assuming EventCard is needed
+import LoadingSpinner from '../components/Common/LoadingSpinner'; // Assuming you have a LoadingSpinner component
 
 const Profile = () => {
-  const [savedNews, setSavedNews] = useState(sampleSavedNews);
-  const [savedImages, setSavedImages] = useState(sampleSavedImages);
-  const [savedEvents, setSavedEvents] = useState(sampleSavedEvents);
+  // Get user data and saved items from AuthContext
+  const { user, isLoading, savedNews, savedImages, savedEvents, removeSavedNews, removeSavedImage, removeSavedEvent } = useAuth();
 
-  // Placeholder user data
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    profileImage: "https://via.placeholder.com/150"
-  };
+  // Check if loading or user is null, display a loading message
+  if (isLoading) {
+    return <LoadingSpinner />; // Or any other loading indicator
+  }
 
-  // Toggle save status for news
-  const handleSaveNews = (article, isCurrentlySaved) => {
-    if (!isCurrentlySaved) {
-      setSavedNews((prev) => prev.filter((news) => news.id !== article.id));
+  if (!user) {
+    // Redirect to login page or show a message if not logged in
+    // You might want to use navigate here if not handled by your routing
+    return <div className="not-logged-in-message">Please log in to view your profile.</div>;
+  }
+
+  // Functions to handle unsaving items
+  const handleUnsaveImage = async (image) => {
+    // Ensure user and image.id exist before calling removeSavedImage
+    if (user && image && image.id) {
+      await removeSavedImage(image.id);
     }
   };
 
-  // Toggle save status for images
-  const handleSaveImage = (image) => {
-    setSavedImages((prev) =>
-      prev.filter((img) => img.id !== image.id)
-    );
+  const handleUnsaveEvent = async (event) => {
+    // Assuming event has a unique identifier, like 'id' or 'name' (as used in AuthContext)
+    // Based on AuthContext, it seems 'id' is used for removal, let's use that if available, otherwise 'name'
+    if (user && event) {
+       const itemId = event.id || event.name; // Use ID if available, otherwise name
+       if(itemId) {
+           await removeSavedEvent(itemId);
+       }
+    }
   };
 
-  // Toggle save status for events
-  const handleSaveEvent = (event) => {
-    setSavedEvents((prev) =>
-      prev.filter((ev) => ev.name !== event.name)
-    );
+  const handleUnsaveNews = async (article) => {
+    // Ensure user and article.id exist before calling removeSavedNews
+    if (user && article && article.id) {
+      await removeSavedNews(article.id);
+    }
   };
 
   return (
@@ -155,8 +51,9 @@ const Profile = () => {
       {/* Profile Details Section */}
       <section className="profile-section">
         <div className="profile-container">
-          <img src={user.profileImage} alt="Profile" className="profile-image" />
-          <h1 className="profile-name">{user.name}</h1>
+          {/* You might need to add a profile image field to your user schema if you want to display one */}
+          {/* Display username if available, otherwise email */}
+          <h1 className="profile-name">{user.username || user.email}</h1>
           <p className="profile-email">{user.email}</p>
         </div>
       </section>
@@ -165,41 +62,45 @@ const Profile = () => {
       <section className="glass-section">
         <h2 className="section-title">My Saved Events</h2>
         <div className="saved-events-grid">
-          {savedEvents.map((event) => (
-            <div key={event.name} className="event-card">
-              <h2 id="event-heading">{event.name}</h2>
-              {event.feature_image && (
-                <div className="event-image-container">
-                  <img id="event-img" src={event.feature_image} alt={event.name} />
+          {savedEvents && savedEvents.length > 0 ? (
+            savedEvents.map((event) => (
+              <div key={event.id || event.name} className="event-card"> {/* Use ID or name as key */}
+                <h2 id="event-heading">{event.name}</h2>
+                {event.feature_image && (
+                  <div className="event-image-container">
+                    <img id="event-img" src={event.feature_image} alt={event.name} />
+                  </div>
+                )}
+                <p id="event-para">{event.description}</p>
+                <div className="event-details">
+                  <p><strong>Date:</strong> {event.date ? new Date(event.date).toLocaleDateString() : 'N/A'}</p>
+                  {event.location && <p><strong>Location:</strong> {event.location.name || event.location}</p>}
+                  {event.type && <p><strong>Type:</strong> {event.type.name}</p>}
                 </div>
-              )}
-              <p id="event-para">{event.description}</p>
-              <div className="event-details">
-                <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
-                {event.location && <p><strong>Location:</strong> {event.location.name || event.location}</p>}
-                {event.type && <p><strong>Type:</strong> {event.type.name}</p>}
+                <div className="event-actions">
+                  <button
+                    id="event-save-btn"
+                    className="button"
+                    onClick={() => handleUnsaveEvent(event)} // Call handleUnsaveEvent
+                  >
+                    Unsave
+                  </button>
+                  {event.video_url && (
+                    <a id="event-yt-btn" href={event.video_url} target="_blank" rel="noopener noreferrer" className="button">
+                      Watch Video
+                    </a>
+                  )}
+                  {event.news_url && (
+                    <a id="event-news-btn" href={event.news_url} target="_blank" rel="noopener noreferrer" className="button">
+                      Read More
+                    </a>
+                  )}
+                </div>
               </div>
-              <div className="event-actions">
-                <button
-                  id="event-save-btn"
-                  className="button"
-                  onClick={() => handleSaveEvent(event)}
-                >
-                  Unsave
-                </button>
-                {event.video_url && (
-                  <a id="event-yt-btn" href={event.video_url} target="_blank" rel="noopener noreferrer" className="button">
-                    Watch Video
-                  </a>
-                )}
-                {event.news_url && (
-                  <a id="event-news-btn" href={event.news_url} target="_blank" rel="noopener noreferrer" className="button">
-                    Read More
-                  </a>
-                )}
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No saved events yet.</p>
+          )}
         </div>
       </section>
 
@@ -207,29 +108,33 @@ const Profile = () => {
       <section className="glass-section">
         <h2 className="section-title">My Saved Images</h2>
         <div className="image-grid">
-          {savedImages.map((image) => (
-            <div key={image.id} className="image-item">
-              <img src={image.url} alt={image.title || 'Space image'} loading="lazy" />
-              <button
-                className={`save-button saved`}
-                onClick={() => handleSaveImage(image)}
-                title="Unsave image"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="#ff6b6b" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                </svg>
-              </button>
-              <div className="image-overlay">
-                <h3>{image.title || 'Untitled'}</h3>
-                {image.date && <p className="image-date">{image.date}</p>}
-                {image.explanation && (
-                  <p className="image-description-preview">
-                    {image.explanation.length > 100 ? `${image.explanation.substring(0, 100)}...` : image.explanation}
-                  </p>
-                )}
+          {savedImages && savedImages.length > 0 ? (
+            savedImages.map((image) => (
+              <div key={image.id} className="image-item">
+                <img src={image.url} alt={image.title || 'Space image'} loading="lazy" />
+                <button
+                  className={`save-button saved`}
+                  onClick={() => handleUnsaveImage(image)} // Call handleUnsaveImage
+                  title="Remove image"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#ff6b6b" stroke="currentColor" strokeWidth="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                  </svg>
+                </button>
+                <div className="image-overlay">
+                  <h3>{image.title || 'Untitled'}</h3>
+                  {image.date && <p className="image-date">{image.date}</p>}
+                  {image.explanation && (
+                    <p className="image-description-preview">
+                      {image.explanation.length > 100 ? `${image.explanation.substring(0, 100)}...` : image.explanation}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No saved images yet.</p>
+          )}
         </div>
       </section>
 
@@ -237,20 +142,27 @@ const Profile = () => {
       <section className="glass-section">
         <h2 className="section-title">My Saved News</h2>
         <div className="saved-news-grid">
-          {savedNews.map((article) => (
-            <NewsCard
-              key={article.id}
-              article={article}
-              onSave={handleSaveNews}
-              isSaved={true}
-            />
-          ))}
+          {savedNews && savedNews.length > 0 ? (
+            savedNews.map((article) => (
+              <NewsCard
+                key={article.id}
+                article={article}
+                onSave={() => handleUnsaveNews(article)} // Call handleUnsaveNews
+                isSaved={true}
+              />
+            ))
+          ) : (
+             <p>No saved news yet.</p>
+          )}
         </div>
       </section>
 
-
       <style jsx>{`
         .profile-page {
+        .loading-message {\n
+          text-align: center;\n
+          font-size: 1.5rem;\n
+          color: #e0e0e0;\n
           min-height: 100vh;
           background: linear-gradient(135deg, #0f0f1a, #1a1a2e);
           color: #e0e0e0;
@@ -598,6 +510,15 @@ const Profile = () => {
           .event-image-container img {
             max-height: 140px;
           }
+        }
+        .loading-message, .not-logged-in-message {
+          text-align: center;
+          font-size: 1.5rem;
+          color: #e0e0e0;
+          min-height: 80vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       `}</style>
     </div>

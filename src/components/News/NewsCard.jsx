@@ -1,6 +1,7 @@
+import React from 'react';
 
 // NewsCard Component - Displays individual news article
-const NewsCard = ({ article, onSave, isSaved }) => {
+const NewsCard = ({ article, onSave, isSaved, isLoading = false }) => {
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -12,6 +13,7 @@ const NewsCard = ({ article, onSave, isSaved }) => {
     const handleSave = (e) => {
         e.preventDefault();
         e.stopPropagation();
+        if (isLoading) return; // Prevent clicks while loading
         onSave(article);
     };
 
@@ -28,19 +30,43 @@ const NewsCard = ({ article, onSave, isSaved }) => {
                     />
                     <button
                         onClick={handleSave}
-                        className={`save-button ${isSaved ? 'saved' : ''}`}
+                        className={`save-button ${isSaved ? 'saved' : ''} ${isLoading ? 'loading' : ''}`}
                         title={isSaved ? 'Remove from saved' : 'Save for later'}
+                        disabled={isLoading}
                     >
-                        <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill={isSaved ? '#ff6b6b' : 'none'}
-                            stroke="currentColor"
-                            strokeWidth="2"
-                        >
-                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                        </svg>
+                        {isLoading ? (
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                className="spinner"
+                            >
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    fill="none"
+                                    strokeDasharray="31.416"
+                                    strokeDashoffset="31.416"
+                                    style={{
+                                        animation: 'spin 1s linear infinite'
+                                    }}
+                                />
+                            </svg>
+                        ) : (
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill={isSaved ? '#ff6b6b' : 'none'}
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            >
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                            </svg>
+                        )}
                     </button>
                 </div>
             )}
@@ -63,20 +89,44 @@ const NewsCard = ({ article, onSave, isSaved }) => {
                     {!article.image_url && (
                         <button
                             onClick={handleSave}
-                            className={`save-button-text ${isSaved ? 'saved' : ''}`}
+                            className={`save-button-text ${isSaved ? 'saved' : ''} ${isLoading ? 'loading' : ''}`}
                             title={isSaved ? 'Remove from saved' : 'Save for later'}
+                            disabled={isLoading}
                         >
-                            <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill={isSaved ? '#ff6b6b' : 'none'}
-                                stroke="currentColor"
-                                strokeWidth="2"
-                            >
-                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                            </svg>
-                            {isSaved ? 'Saved' : 'Save'}
+                            {isLoading ? (
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    className="spinner"
+                                >
+                                    <circle
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        fill="none"
+                                        strokeDasharray="31.416"
+                                        strokeDashoffset="31.416"
+                                        style={{
+                                            animation: 'spin 1s linear infinite'
+                                        }}
+                                    />
+                                </svg>
+                            ) : (
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill={isSaved ? '#ff6b6b' : 'none'}
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                >
+                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                                </svg>
+                            )}
+                            {isLoading ? 'Saving...' : (isSaved ? 'Saved' : 'Save')}
                         </button>
                     )}
                 </div>

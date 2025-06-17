@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ImageTabs from './ImageTab';
 import ImageGrid from './ImageGrid';
 import * as spaceAPI from '../../api/spaceAPI';
+import { useAuth } from "../../context/AuthContext";
 
 const ImageGallerySection = () => {
   const [activeTab, setActiveTab] = useState('spacex');
@@ -10,6 +11,7 @@ const ImageGallerySection = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState(null);
 
+  const { user, savedImages, saveImage, removeSavedImage } = useAuth();
   // Format data from API responses into a consistent structure for the ImageGrid
   const formatImages = (data, type) => {
     switch (type) {
@@ -107,6 +109,29 @@ const ImageGallerySection = () => {
     fetchImages();
   }, [activeTab, searchQuery]);
 
+  // Handle saving/unsaving images
+  const handleToggleSaveImage = async (image) => {
+    if (!user) {
+      alert("Please log in to save images.");
+      return;
+    }
+
+    // Check if the image is currently saved using the savedImages from AuthContext
+    const isImageSaved = savedImages.some(savedImage => savedImage.id === image.id);
+
+    try {
+      if (isImageSaved) {
+        await removeSavedImage(image.id);
+        console.log('Removed image from saved:', image.title || image.id);
+      } else {
+        await saveImage(image);
+        console.log('Saved image:', image.title || image.id);
+      }
+    } catch (error) {
+      console.error("Error toggling save status:", error);
+      alert("Failed to update saved status. Please try again.");
+    }
+  };
   // Handle search submit
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -138,7 +163,12 @@ const ImageGallerySection = () => {
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
-        <ImageGrid images={images} loading={loading} />
+        <ImageGrid
+          images={images}
+          loading={loading}
+          onToggleSave={handleToggleSaveImage} // Pass the toggle function
+          savedImages={savedImages} // Pass the saved images array from useAuth
+        />
       )}
     </div>
   );

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 
 export default function AuthPage() {
@@ -9,6 +11,10 @@ export default function AuthPage() {
     password: "",
     confirmPassword: ""
   });
+  const [error, setError] = useState("");
+
+  const { register, login, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,16 +22,82 @@ export default function AuthPage() {
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSignUp && formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+    setError("");
+
+    // Validate password length
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters");
       return;
     }
-    console.log(isSignUp ? "Registering..." : "Logging in...", formData);
-    // Add actual API call or auth logic here
+
+    if (isSignUp && formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match!");
+      return;
+    }
+
+    try {
+      if (isSignUp) {
+        // Call Firebase register function with email, password, and username
+        const result = await register(
+          formData.email,
+          formData.password,
+          formData.username
+        );
+        
+        if (result.success) {
+          // Registration successful, redirect to home
+          navigate("/profile");
+        } else {
+          setError(result.error || "Registration failed");
+        }
+      } else {
+        // Call Firebase login function with email and password
+        const result = await login(
+          formData.email,
+          formData.password
+        );
+        
+        if (result.success) {
+          // Login successful, redirect to home
+          navigate("/profile");
+        } else {
+          setError(result.error || "Login failed");
+        }
+      }
+    } catch (error) {
+      console.error("Auth error:", error);
+      
+      // Handle specific Firebase errors
+      if (error.code) {
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            setError("Email already in use");
+            break;
+          case "auth/invalid-email":
+            setError("Invalid email address");
+            break;
+          case "auth/weak-password":
+            setError("Password should be at least 6 characters");
+            break;
+          case "auth/user-not-found":
+            setError("User not found");
+            break;
+          case "auth/wrong-password":
+            setError("Incorrect password");
+            break;
+          default:
+            setError("Something went wrong. Please try again.");
+        }
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    }
   };
 
   return (
@@ -33,6 +105,8 @@ export default function AuthPage() {
       <div className="form-box">
         <h2>👋 {isSignUp ? "Create Account" : "Welcome Back"}</h2>
         <p>{isSignUp ? "Sign up to get started" : "Sign in to access your account"}</p>
+
+        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           {isSignUp && (
@@ -43,6 +117,7 @@ export default function AuthPage() {
               value={formData.username}
               onChange={handleChange}
               required
+              minLength={3}
             />
           )}
           <input
@@ -60,6 +135,7 @@ export default function AuthPage() {
             value={formData.password}
             onChange={handleChange}
             required
+            minLength={6}
           />
           {isSignUp && (
             <input
@@ -69,10 +145,13 @@ export default function AuthPage() {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
+              minLength={6}
             />
           )}
 
-          <button type="submit">{isSignUp ? "Blast Away" : "Sign In"}</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Loading..." : (isSignUp ? "Blast Away" : "Sign In")}
+          </button>
         </form>
 
         <div className="toggle">
