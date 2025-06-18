@@ -70,8 +70,8 @@ function Navigation() {
           {isLoggedIn ? (
             // Show when user is logged in
             <>
-              <span className="hidden md:block text-sm text-gray-300 mr-3">
-                Welcome, {user?.username || user?.email?.split('@')[0]}
+              <span className="user-info">
+                {user?.username || user?.email?.split('@')[0]}
               </span>
               <Link to="/profile" className="centered mr-3">
                 <FontAwesomeIcon 
@@ -138,7 +138,7 @@ function Navigation() {
                 // Show when user is logged in - Mobile
                 <>
                   <li className="mobile-user-info">
-                    <span>Welcome, {user?.username || user?.email?.split('@')[0]}</span>
+                    <span>{user?.username || user?.email?.split('@')[0]}</span>
                   </li>
                   <li className="mobile-profile">
                     <Link to="/profile" onClick={closeMobileMenu}>
@@ -260,13 +260,20 @@ function Navigation() {
           font-weight: bold;
         }
         
+        .user-info {
+          color: #e0e0e0;
+          font-size: 0.875rem; /* text-sm */
+          margin-right: 0.75rem; /* mr-3 */
+          display: flex;
+          align-items: center; /* Vertically center */
+        }
+
         .mobile-user-info {
           margin-top: 1rem;
           padding: 0.5rem 1rem;
           background-color: rgba(255, 255, 255, 0.1);
           border-radius: 4px;
           text-align: center;
-          border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .mobile-user-info span {
