@@ -29,8 +29,10 @@ const EventCard = ({ event }) => {
     try {
       if (isSaved) {
         await removeSavedEvent(event.id); // Use event.id to remove
+        alert("Event unsaved successfully!");
       } else {
         await saveEvent(event); // Pass the full event object to save
+        alert("Event saved successfully!");
       }
     } catch (error) {
       console.error("Error toggling save status:", error);
