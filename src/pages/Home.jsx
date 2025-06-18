@@ -3,8 +3,6 @@ import EventsSection from '../components/Events/EventsSection';
 import APOD from "../components/APOD"
 import Header from '../components/Common/Header';
 
-
-
 const HEADER_TITLE = "Solistic";
 const HEADER_PARA = "A center for all space enthusiasts throughout the Mutliverse.";
 // const HEADER_BG_URL = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjR2ZWVkc2lhdGViaThzeGhrZWtkY2ZrbTh6c28wdTYzNnpzd3cwbiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/tZqBZPEPUrzuUIELIV/giphy.gif";
