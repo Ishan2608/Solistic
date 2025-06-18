@@ -157,7 +157,7 @@ const planetData = [
     color: 0xd9c36c,
     description: "Saturn is the sixth planet from the Sun and has the most extensive ring system of any planet. It's known for its prominent rings, which are mostly made of ice particles with a smaller amount of rocky debris.",
     modelPath: 'src/Models/Saturn.glb',
-    modelScale: 6
+    modelScale: 1.0
   },
   {
     name: "Uranus",

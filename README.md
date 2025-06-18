@@ -1,61 +1,35 @@
-# Solistic (Work In Progress)
+# Solistic
 
-A one stop platform for all space enthusiasts to stay updated on latest trends, news, and event of the cosmos. They also get to explore the solar system in our simulator and explore the image gallery from sources like Hubble and Mars Rover.
+A social site for Space Enthusiasts to keep track of all latest events, news and images.
 
 The project has started developing as of 28th April 2025 by some college students, enthusiastic about building something... `Cool`.
 
-This is a work in progress and will see major updates over time.
+## Introduction
 
-# Backend Things to do.
+Solistic is a web application designed for space enthusiasts. It serves as a central hub for staying informed about the latest developments in space exploration, providing access to news articles, upcoming events, and a rich image gallery sourced from various astronomical missions. Additionally, users can interact with a captivating 3D solar system simulator. The platform also allows registered users to save their favorite events, news articles, and images for easy access.
 
-1. Write Firebase setup code with API in Firebase.js
-2. Create User Schema:
-```
-1. Unique username
-2. Email
-3. Password
-4. Saved Events [list]
-5. Saved News [list]
-6. Saved Images [list]
-```
-3. Create Event Schema: 
-```
-Event Schema:
+## Features
 
-Unique event ID
-Name
-Description
-Date
-Location (optional)
-Type (optional)
-Feature Image (optional)
-Video URL (optional)
-```
-4. News Schema: 
-```
-News Schema:
+*   **Latest News:** Stay updated with the most recent news from the space industry.
+*   **Upcoming Events:** Discover and track astronomical events, launches, and other space-related happenings.
+*   **Image Gallery:** Explore stunning images from missions like Hubble and the Mars Rovers.
+*   **Solar System Simulator:** Interact with a 3D model of the solar system.
+*   **User Authentication:** Register and log in to personalize your experience.
+*   **Saved Items:** Save your favorite news, events, and images to your profile.
 
-Unique news ID
-Title
-URL
-Summary
-Image URL (optional)
-Site Name
-```
-5. Image Schema: 
-```
-Unique image ID
-Title
-URL
-Datetime
-Description (optional)
-```
-6. Go to `AuthContext.jsx` file and using the `useContext()` function, create AuthContext wrapper with the relevant methods such as:
-  - Register
-  - Login
-  - Logout
-  - Save Event
-  - Save Image
-  - Save News
+## Technologies Used
 
-7. Implement the logic using Firebase database.
+*   **Frontend:**
+    *   React: A JavaScript library for building user interfaces.
+    *   React Router: For handling navigation within the application.
+    *   Tailwind CSS: A utility-first CSS framework for styling (or pure CSS as used in some components).
+    *   Three.js / React Three Fiber / Drei: For creating the 3D solar system simulator.
+    *   Font Awesome: For icons.
+*   **Backend:**
+    *   Firebase Authentication: For managing user registration and login.
+    *   Firebase Firestore: A NoSQL cloud database for storing user data (saved items) and potentially other application data.
+*   **APIs:**
+    *   SpaceDevs API: For fetching information on space events and launches.
+    *   NASA APIs (APOD, Mars Rover Photos, etc.): For fetching astronomical images and data.
+    *   News API (or similar): For fetching space-related news articles.
+
