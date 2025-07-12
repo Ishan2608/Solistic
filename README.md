@@ -1,4 +1,4 @@
-# Solistic (Visit)[https://solistic.netlify.app/]
+# Solistic [Visit](https://solistic.netlify.app/)
 
 A social site for Space Enthusiasts to keep track of all latest events, news and images.
 
